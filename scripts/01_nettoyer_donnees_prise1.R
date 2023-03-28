@@ -103,12 +103,12 @@ etud_unique1 <- subset(etudiant_unique, complete.cases(etudiant_unique$prenom_no
 cours_unique1 <- subset(cours_unique, complete.cases(cours_unique$sigle))
 collabo <- subset(collabo, complete.cases(collabo$etudiant1))
 etud_unique1 <-as.data.frame(etud_unique1) 
-cours_unique1 <-as.data.frame(cours_unique1) 
+cours_unique1 <-as.data.frame(unique(cours_unique1))
 collabo <-as.data.frame(collabo)
 
 
-
-
+###nettoyer cours
+cours_unique1<-cours_unique1[!duplicated(cours_unique1$sigle),]
 
 ####nettoyer ?tudiant
 testetud<-subset(etud_unique1, complete.cases(etud_unique1$regime_coop))
