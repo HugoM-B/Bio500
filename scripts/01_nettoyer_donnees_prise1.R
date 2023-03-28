@@ -3,8 +3,8 @@
 # Victor Cameron
 # 15 mars 2023
 ######################################################
+setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
 
-111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 ######################################################
 ## Etapes (*À ADAPTER*)
 # 1. Charger tous les donnees provenants du dossier data/raw
@@ -17,16 +17,16 @@
 # 3. Sauvegarder les données fusionnées de chaque table dans le dossier data/clean
 ######################################################
 
-shrekshrekshrekshrek
+
 #-----------------------------------------------------
 # 1. Charger les données
 #
 # Assumant que les données sont sauvées dans le 
 # sous-répertoire data/raw
 #-----------------------------------------------------
-setwd("C:/Users/Hugo/Documents/methode")
+
 # Extraire le nom des fichers de chaque groupe
-allFiles <- dir('donnees_BIO500/raw/')
+allFiles <- dir('data/raw/donnees_BIO500')
 
 # Tables à fusioner
 tabNames <- c('collaboration', 'cour', 'etudiant')
@@ -36,23 +36,23 @@ nbGroupe <- length(grep(tabNames[1], allFiles))
 
 # Charger les donnees
 for(tab in tabNames) {
-    # prendre seulement les fichers de la table specifique `tab`
-    tabFiles <- allFiles[grep(tab, allFiles)]
+  # prendre seulement les fichers de la table specifique `tab`
+  tabFiles <- allFiles[grep(tab, allFiles)]
+  
+  for(groupe in 1:nbGroupe) {
+    # Definir le nom de l'obj dans lequel sauver les donnees de la table `tab` du groupe `groupe`
+    tabName <- paste0(tab, "_", groupe)
     
-    for(groupe in 1:nbGroupe) {
-        # Definir le nom de l'obj dans lequel sauver les donnees de la table `tab` du groupe `groupe`
-        tabName <- paste0(tab, "_", groupe)
-
-        # Avant  de charger les données, il faut savoir c'est quoi le séparateur utilisé car
-        # il y a eu des données separées par "," et des autres separes par ";"
-        ficher <- paste0('donnees_BIO500/raw/', tabFiles[groupe])
-        L <- readLines(ficher, n = 1) # charger première ligne du donnée
-        separateur <- ifelse(grepl(';', L), ';', ',') # S'il y a un ";", separateur est donc ";"
-
-        # charger le donnée avec le bon séparateur et donner le nom `tabName`
-        assign(tabName, read.csv(ficher, sep = separateur, stringsAsFactors = FALSE, na.strings=c(""," ","NA")))
-
-    }
+    # Avant  de charger les données, il faut savoir c'est quoi le séparateur utilisé car
+    # il y a eu des données separées par "," et des autres separes par ";"
+    ficher <- paste0('data/raw/donnees_BIO500/', tabFiles[groupe])
+    L <- readLines(ficher, n = 1) # charger première ligne du donnée
+    separateur <- ifelse(grepl(';', L), ';', ',') # S'il y a un ";", separateur est donc ";"
+    
+    # charger le donnée avec le bon séparateur et donner le nom `tabName`
+    assign(tabName, read.csv(ficher, sep = separateur, stringsAsFactors = FALSE, na.strings=c(""," ","NA")))
+    
+  }
 }
 
 # nettoyer des objets temporaires utilisé dans la boucle
@@ -82,25 +82,161 @@ etudiant<-rbind(etudiant_1,etudiant_2,etudiant_3,etudiant_4,etudiant_5,etudiant_
 library(RSQLite)
 
 etudiant <- data.frame(lapply(etudiant, function(x) {
-                    gsub("-", "_", x)
-                }))
+  gsub("-", "_", x) }))
 cours <- data.frame(lapply(cours, function(x) {
-  gsub("-", "_", x)
-}))
+  gsub("-", "_", x)}))
 collabo <- data.frame(lapply(collabo, function(x) {
-  gsub("-", "_", x)
-}))
+  gsub("-", "_", x)}))
 
+etudiant <- data.frame(lapply(etudiant, function(x) {
+  gsub(" ", "", x) }))
+cours <- data.frame(lapply(cours, function(x) {
+  gsub(" ", "", x)}))
+collabo <- data.frame(lapply(collabo, function(x) {
+  gsub(" ", "", x)}))
 
 etudiant_unique<-unique(etudiant)
 cours_unique<-unique(cours)
-collabo_unique<-unique(collabo)
+collabo<-unique(collabo)
 
 etud_unique1 <- subset(etudiant_unique, complete.cases(etudiant_unique$prenom_nom))
 cours_unique1 <- subset(cours_unique, complete.cases(cours_unique$sigle))
-collabo_unique1 <- subset(collabo_unique, complete.cases(collabo_unique$etudiant1))
+collabo <- subset(collabo, complete.cases(collabo$etudiant1))
+etud_unique1 <-as.data.frame(etud_unique1) 
+cours_unique1 <-as.data.frame(cours_unique1) 
+collabo <-as.data.frame(collabo)
 
-install.packages("stringr")
+
+
+
+
+####nettoyer ?tudiant
+testetud<-subset(etud_unique1, complete.cases(etud_unique1$regime_coop))
+testetudnoinfo<-subset(etud_unique1, !complete.cases(etud_unique1$regime_coop))
+
+
+testetudnoinfo$test<-is.element(testetudnoinfo$prenom_nom,testetud$prenom_nom)
+testetudnoinfo<-subset(testetudnoinfo,testetudnoinfo$test==FALSE)
+testetudnoinfo<-testetudnoinfo[,-9]
+etudiant_nom<-rbind(testetud,testetudnoinfo)
+etudiant_nom <- subset(etudiant_nom, prenom_nom != 'arianne_barette' & prenom_nom != 'mael_guerin' & prenom_nom != 'marie_burghin' & prenom_nom != 'penelope_robert' 	& prenom_nom != 'philippe_barette' & prenom_nom != 'phillippe_bourassa' & prenom_nom != 'yanick_sagneau' & prenom_nom != 'yannick_sageau')
+
+
+###loader package stringr
+library(stringr)
+
+etudiant_nom$patterna<-str_sub(etudiant_nom$prenom_nom,1,-5)
+etudiant_nom$patternb<-str_sub(etudiant_nom$prenom_nom,7,-1)
+etudiant_nom$patternc<-str_sub(etudiant_nom$prenom_nom,1,13)
+etudiant_nom$patternd<-str_sub(etudiant_nom$prenom_nom,-15,-1)
+
+etudiant_nom<-unique(etudiant_nom[!duplicated(etudiant_nom$patterna),])
+etudiant_nom<-unique(etudiant_nom[!duplicated(etudiant_nom$patternb),])
+etudiant_nom<-unique(etudiant_nom[!duplicated(etudiant_nom$patternc),])
+etudiant_nom<-unique(etudiant_nom[!duplicated(etudiant_nom$patternd),])
+
+#etudiant_nom<-etudiant_nom[,-c(9,12)]
+
+####Nettoyer collab
+
+collabo$pata<-str_sub(collabo$etudiant1 ,1,-5)
+collabo$patb<-str_sub(collabo$etudiant1,7,-1)
+collabo$patc<-str_sub(collabo$etudiant1,1,13)
+collabo$patd<-str_sub(collabo$etudiant1,-15,-1)
+
+collabo$pata2<-str_sub(collabo$etudiant2 ,1,-5)
+collabo$patb2<-str_sub(collabo$etudiant2,7,-1)
+collabo$patc2<-str_sub(collabo$etudiant2,1,13)
+collabo$patd2<-str_sub(collabo$etudiant2,-15,-1)
+
+##etudiant 1
+correspondance<-match(collabo$pata, etudiant_nom$patterna)
+k<-seq(1,length(collabo$etudiant1),by=1)
+collabo$pata[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+
+correspondance<-match(collabo$patb, etudiant_nom$patternb)
+k<-seq(1,length(collabo$etudiant1),by=1)
+collabo$patb[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+
+correspondance<-match(collabo$patc, etudiant_nom$patternc)
+k<-seq(1,length(collabo$etudiant1),by=1)
+collabo$patc[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+
+correspondance<-match(collabo$patd, etudiant_nom$patternd)
+k<-seq(1,length(collabo$etudiant1),by=1)
+collabo$patd[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+
+
+##etudiant 2
+correspondance<-match(collabo$pata2, etudiant_nom$patterna)
+k<-seq(1,length(collabo$etudiant2),by=1)
+collabo$pata2[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+
+correspondance<-match(collabo$patb2, etudiant_nom$patternb)
+k<-seq(1,length(collabo$etudiant2),by=1)
+collabo$patb2[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+
+correspondance<-match(collabo$patc2, etudiant_nom$patternc)
+k<-seq(1,length(collabo$etudiant2),by=1)
+collabo$patc2[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+
+correspondance<-match(collabo$patd2, etudiant_nom$patternd)
+k<-seq(1,length(collabo$etudiant2),by=1)
+collabo$patd2[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+
+
+###remplacer les valeurs
+collabo$etudiant10<-collabo$pata
+collaboNa<-subset(collabo, !complete.cases(collabo$etudiant10))
+collaboSNA<-subset(collabo, complete.cases(collabo$etudiant10))
+collaboNa$etudiant10<-collaboNa$patb
+collabo<-rbind(collaboSNA,collaboNa)
+
+collaboNa<-subset(collabo, !complete.cases(collabo$etudiant10))
+collaboSNA<-subset(collabo, complete.cases(collabo$etudiant10))
+collaboNa$etudiant10<-collaboNa$patc
+collabo<-rbind(collaboSNA,collaboNa)
+
+collaboNa<-subset(collabo, !complete.cases(collabo$etudiant10))
+collaboSNA<-subset(collabo, complete.cases(collabo$etudiant10))
+collaboNa$etudiant10<-collaboNa$patd
+collabo<-rbind(collaboSNA,collaboNa)
+
+collaboNa<-subset(collabo, !complete.cases(collabo$etudiant10))
+collaboNasave<-subset(collabo, !complete.cases(collabo$etudiant10)) ### erreur bizzare ici
+collaboSNA<-subset(collabo, complete.cases(collabo$etudiant10))
+collaboNa$etudiant10<-collaboNa$etudiant1
+collabo<-rbind(collaboSNA,collaboNa)
+
+collabo$etudiant1<-collabo$etudiant10
+
+####etudiant 2
+
+collabo$etudiant11<-collabo$pata2
+collaboNa<-subset(collabo, !complete.cases(collabo$etudiant11))
+collaboSNA<-subset(collabo, complete.cases(collabo$etudiant11))
+collaboNa$etudiant11<-collaboNa$patb2
+collabo<-rbind(collaboSNA,collaboNa)
+
+collaboNa<-subset(collabo, !complete.cases(collabo$etudiant11))
+collaboSNA<-subset(collabo, complete.cases(collabo$etudiant11))
+collaboNa$etudiant11<-collaboNa$patc2
+collabo<-rbind(collaboSNA,collaboNa)
+
+collaboNa<-subset(collabo, !complete.cases(collabo$etudiant11))
+collaboSNA<-subset(collabo, complete.cases(collabo$etudiant11))
+collaboNa$etudiant11<-collaboNa$patd2
+collabo<-rbind(collaboSNA,collaboNa)
+
+collaboNa<-subset(collabo, !complete.cases(collabo$etudiant11))
+collaboNasave2<-subset(collabo, !complete.cases(collabo$etudiant11)) ### erreur bizzare ici
+collaboSNA<-subset(collabo, complete.cases(collabo$etudiant11))
+collaboNa$etudiant11<-collaboNa$etudiant2
+collabo<-rbind(collaboSNA,collaboNa)
+
+collabo$etudiant2<-collabo$etudiant11
+collabofinal<-collabo[,c(1:4)]
+collabofinal<- unique(collabofinal)
 
 
 
@@ -173,3 +309,4 @@ SELECT etudiant1,
  COUNT"
 
 #-----------------------------------------------------
+hg 
