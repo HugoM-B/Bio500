@@ -119,8 +119,6 @@ testetudnoinfo$test<-is.element(testetudnoinfo$prenom_nom,testetud$prenom_nom)
 testetudnoinfo<-subset(testetudnoinfo,testetudnoinfo$test==FALSE)
 testetudnoinfo<-testetudnoinfo[,-9]
 etudiant_nom<-rbind(testetud,testetudnoinfo)
-etudiant_nom <- subset(etudiant_nom, prenom_nom != 'arianne_barette' & prenom_nom != 'mael_guerin' & prenom_nom != 'marie_burghin' & prenom_nom != 'penelope_robert' 	& prenom_nom != 'philippe_barette' & prenom_nom != 'phillippe_bourassa' & prenom_nom != 'yanick_sagneau' & prenom_nom != 'yannick_sageau')
-
 
 ###loader package stringr
 library(stringr)
@@ -239,7 +237,8 @@ collabofinal<-collabo[,c(1:4)]
 collabofinal<- unique(collabofinal)
 
 
-
+etudiant_nom <- subset(etudiant_nom, prenom_nom != 'arianne_barette' & prenom_nom != 'mael_guerin' & prenom_nom != 'marie_burghin' & prenom_nom != 'penelope_robert' 	& prenom_nom != 'philippe_barette' & prenom_nom != 'phillippe_bourassa' & prenom_nom != 'yanick_sagneau' & prenom_nom != 'yannick_sageau')
+etudiant_nom <- etudiant_nom[-c(etudiant_nom$prenom == 'mia' & etudiant_nom$programme == NA),]
 
 
 
