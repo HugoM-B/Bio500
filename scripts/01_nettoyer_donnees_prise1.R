@@ -236,10 +236,31 @@ collabo$etudiant2<-collabo$etudiant11
 collabofinal<-collabo[,c(1:4)]
 collabofinal<- unique(collabofinal)
 
+new_name<-c('maude_viens','eloise_bernier','karim_hamzaoui','naomie_morin','justine_lebelle','gabrielle_moreault','maxence_comyn')
+for(i in 1:7){
+etudiant_nom[i + 163,1]<-new_name[i] 
+}
 
-etudiant_nom <- subset(etudiant_nom, prenom_nom != 'arianne_barette' & prenom_nom != 'mael_guerin' & prenom_nom != 'marie_burghin' & prenom_nom != 'penelope_robert' 	& prenom_nom != 'philippe_barette' & prenom_nom != 'phillippe_bourassa' & prenom_nom != 'yanick_sagneau' & prenom_nom != 'yannick_sageau')
-etudiant_nom <- etudiant_nom[-c(etudiant_nom$prenom == 'mia' & etudiant_nom$programme == NA),]
+num<-seq(1,170,1)
+etudiant_nom[,13]<-num
+etudiant_nom <- subset(etudiant_nom, prenom_nom != 'arianne_barette' & prenom_nom != 'mael_guerin' & prenom_nom != 'marie_burghin' & prenom_nom != 'penelope_robert' 	& prenom_nom != 'philippe_barette' & prenom_nom != 'phillippe_bourassa' & prenom_nom != 'yanick_sagneau' & prenom_nom != 'yannick_sageau' & V13 != 121)
 
+
+
+collabofinal <- data.frame(lapply(collabofinal, function(x) {
+  gsub("francis_bourrassa", "francis_bourassa", x)}))
+
+etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+  gsub("louis_philipe_raymond", "louis_philippe_raymond", x)}))
+
+etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+  gsub("madyson_mclean", "madyson_mcclean", x)}))
+
+etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+  gsub("mclean", "mcclean", x)}))
+
+collabofinal <- data.frame(lapply(collabofinal, function(x) {
+  gsub("frederick_laberge", "frederic_laberge", x)}))
 
 
 
