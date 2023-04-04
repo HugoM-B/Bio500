@@ -3,8 +3,8 @@
 # Victor Cameron
 # 15 mars 2023
 ######################################################
-setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
-
+#setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
+setwd("C:/Users/Hugo/Documents/methode/Bio500")
 ######################################################
 ## Etapes (*À ADAPTER*)
 # 1. Charger tous les donnees provenants du dossier data/raw
