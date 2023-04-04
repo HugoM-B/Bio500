@@ -24,9 +24,9 @@ setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
 # Assumant que les données sont sauvées dans le 
 # sous-répertoire data/raw
 #-----------------------------------------------------
-
+#setwd("C:/Users/Hugo/Documents/methode/Bio500")
 # Extraire le nom des fichers de chaque groupe
-allFiles <- dir('data/raw/donnees_BIO500')
+allFiles <- dir('donnees_BIO500/raw')
 
 # Tables à fusioner
 tabNames <- c('collaboration', 'cour', 'etudiant')
@@ -45,7 +45,7 @@ for(tab in tabNames) {
     
     # Avant  de charger les données, il faut savoir c'est quoi le séparateur utilisé car
     # il y a eu des données separées par "," et des autres separes par ";"
-    ficher <- paste0('data/raw/donnees_BIO500/', tabFiles[groupe])
+    ficher <- paste0('donnees_BIO500/raw/', tabFiles[groupe])
     L <- readLines(ficher, n = 1) # charger première ligne du donnée
     separateur <- ifelse(grepl(';', L), ';', ',') # S'il y a un ";", separateur est donc ";"
     
