@@ -148,7 +148,7 @@ setdiff(unique_et1_c, unique_etudiant)
 
 #Ajouter qui il manque----------------------------------- CHANGER LE CODE!!!!
 donnees_abs <- c("eloise_bernier", "eloise", "bernier", NA, NA, NA, NA, NA, "naomie_morin", "naomie", "morin", NA, NA, NA, NA, NA, "karim_hamzaoui", "karim", "hamzaoui", NA, NA, NA, NA, NA, "gabrielle_moreault", "gabrielle", "moreault", NA, NA, NA, NA, NA, "maxence_comyn", "maxence", "comyn", NA, NA, NA, NA, NA, "maude_viens", "maude", "viens", NA, NA, NA, NA, NA, "louis_philippe_raymond", "louis-philippe", "raymond",NA, NA, NA, NA, NA)
-etudiant_abs <- matrix(donnees_abs, nrow = 6, ncol = 8, byrow = TRUE)
+etudiant_abs <- matrix(donnees_abs, nrow = 7, ncol = 8, byrow = TRUE)
 colnames(etudiant_abs) <- c("prenom_nom", "prenom", "nom", "region_administrative", "regime_coop", "formation_prealable", "annee_debut", "programme")
 etudiant <- rbind(etudiant_nom, etudiant_abs)
 rm(donnees_abs, etudiant_abs)
@@ -156,7 +156,7 @@ rm(donnees_abs, etudiant_abs)
 #-----------------------------------------------------
 # Enlever fausses lignes de collaboration avec soi-même ----------------------CHANGERRR code
 #-----------------------------------------------------
-collaboration <- subset(collaboration, etudiant1 != etudiant2)
+#collaboration <- subset(collaboration, etudiant1 != etudiant2)
 
 ###loader package stringr
 library(stringr)
@@ -274,10 +274,10 @@ collabo$etudiant2<-collabo$etudiant11
 collabofinal<-collabo[,c(1:4)]
 collabofinal<- unique(collabofinal)
 
-new_name<-c('maude_viens','eloise_bernier','karim_hamzaoui','naomie_morin','justine_lebelle','gabrielle_moreault','maxence_comyn')
-for(i in 1:7){
-etudiant_nom[i + 163,1]<-new_name[i] 
-}
+#new_name<-c('maude_viens','eloise_bernier','karim_hamzaoui','naomie_morin','justine_lebelle','gabrielle_moreault','maxence_comyn')
+#for(i in 1:7){
+#etudiant_nom[1 + length(etudiant_nom),1]<-new_name[i] 
+#}
 
 num<-seq(1,170,1)
 etudiant_nom[,13]<-num
@@ -300,6 +300,19 @@ etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
 collabofinal <- data.frame(lapply(collabofinal, function(x) {
   gsub("frederick_laberge", "frederic_laberge", x)}))
 
+#Ajouter qui il manque----------------------------------- CHANGER LE CODE!!!!
+donnees_abs <- c("eloise_bernier", "eloise", "bernier", NA, NA, NA, NA, NA, "naomie_morin", "naomie", "morin", NA, NA, NA, NA, NA, "karim_hamzaoui", "karim", "hamzaoui", NA, NA, NA, NA, NA, "gabrielle_moreault", "gabrielle", "moreault", NA, NA, NA, NA, NA, "maxence_comyn", "maxence", "comyn", NA, NA, NA, NA, NA, "maude_viens", "maude", "viens", NA, NA, NA, NA, NA, "louis_philippe_raymond", "louis-philippe", "raymond",NA, NA, NA, NA, NA)
+etudiant_abs <- matrix(donnees_abs, nrow = 7, ncol = 8, byrow = TRUE)
+colnames(etudiant_abs) <- c("prenom_nom", "prenom", "nom", "region_administrative", "regime_coop", "formation_prealable", "annee_debut", "programme")
+etudiant_nom<-etudiant_nom[,c(1:8)]
+etudiant <- rbind(etudiant_nom, etudiant_abs)
+rm(donnees_abs, etudiant_abs)
+
+etudiant<-unique(etudiant)
+
+# Enlever fausses lignes de collaboration avec soi-même ----------------------CHANGERRR code
+#-----------------------------------------------------
+collaboration <- subset(collaboration, etudiant1 != etudiant2)
 
 
 
