@@ -120,6 +120,44 @@ testetudnoinfo<-subset(testetudnoinfo,testetudnoinfo$test==FALSE)
 testetudnoinfo<-testetudnoinfo[,-9]
 etudiant_nom<-rbind(testetud,testetudnoinfo)
 
+
+
+collabofinal <- data.frame(lapply(collabofinal, function(x) {
+  gsub("francis_bourrassa", "francis_bourassa", x)}))
+
+etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+  gsub("louis_philipe_raymond", "louis_philippe_raymond", x)}))
+
+etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+  gsub("madyson_mclean", "madyson_mcclean", x)}))
+
+etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+  gsub("mclean", "mcclean", x)}))
+
+collabofinal <- data.frame(lapply(collabofinal, function(x) {
+  gsub("frederick_laberge", "frederic_laberge", x)}))
+
+#-----------------------------------------------------
+# Ajouter les lignes d'étudiants manquantes dans etudiant
+#-----------------------------------------------------
+
+# Voir qui il manque --------------------Pour la fin
+unique_et1_c<-unique(collabofinal$etudiant1)
+unique_etudiant<-unique(etudiant_nom$prenom_nom)
+setdiff(unique_et1_c, unique_etudiant)
+
+#Ajouter qui il manque----------------------------------- CHANGER LE CODE!!!!
+donnees_abs <- c("eloise_bernier", "eloise", "bernier", NA, NA, NA, NA, NA, "naomie_morin", "naomie", "morin", NA, NA, NA, NA, NA, "karim_hamzaoui", "karim", "hamzaoui", NA, NA, NA, NA, NA, "gabrielle_moreault", "gabrielle", "moreault", NA, NA, NA, NA, NA, "maxence_comyn", "maxence", "comyn", NA, NA, NA, NA, NA, "maude_viens", "maude", "viens", NA, NA, NA, NA, NA, "louis_philippe_raymond", "louis-philippe", "raymond",NA, NA, NA, NA, NA)
+etudiant_abs <- matrix(donnees_abs, nrow = 6, ncol = 8, byrow = TRUE)
+colnames(etudiant_abs) <- c("prenom_nom", "prenom", "nom", "region_administrative", "regime_coop", "formation_prealable", "annee_debut", "programme")
+etudiant <- rbind(etudiant_nom, etudiant_abs)
+rm(donnees_abs, etudiant_abs)
+
+#-----------------------------------------------------
+# Enlever fausses lignes de collaboration avec soi-même ----------------------CHANGERRR code
+#-----------------------------------------------------
+collaboration <- subset(collaboration, etudiant1 != etudiant2)
+
 ###loader package stringr
 library(stringr)
 
