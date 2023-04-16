@@ -281,22 +281,6 @@ etudiant <- subset(etudiant, prenom_nom != 'arianne_barette' & prenom_nom != 'ma
 etudiant<-etudiant[,c(1:8)]
 
 
-#collabofinal <- data.frame(lapply(collabofinal, function(x) {
- # gsub("francis_bourrassa", "francis_bourassa", x)}))
-
-#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
- # gsub("louis_philipe_raymond", "louis_philippe_raymond", x)}))
-
-#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
- # gsub("madyson_mclean", "madyson_mcclean", x)}))
-
-#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
- # gsub("mclean", "mcclean", x)}))
-
-#collabofinal <- data.frame(lapply(collabofinal, function(x) {
- # gsub("frederick_laberge", "frederic_laberge", x)}))
-
-
 #-----------------------------------------------------
 # Ajouter les lignes d'étudiants manquantes dans etudiant
 #-----------------------------------------------------
@@ -313,12 +297,34 @@ colnames(etudiant_abs) <- c("prenom_nom", "prenom", "nom", "region_administrativ
 etudiant <- rbind(etudiant, etudiant_abs)
 rm(donnees_abs, etudiant_abs)
 
-unique_et1_c<-unique(collabo$etudiant1)
-unique_etudiant<-unique(etudiant$prenom_nom)
-setdiff(unique_et1_c, unique_etudiant)
-
-
 etudiant<-unique(etudiant)
+
+
+unique_et1_c<-unique(collabofinal$etudiant1)
+unique_etudiant<-unique(etudiant$prenom_nom)
+nom_diff<-setdiff(unique_et1_c, unique_etudiant)
+bon_nom<-c("yanick_sageau", "peneloppe_robert", "philippe_bourassa", "philippe_barrette","mael_gerin", "marie_bughin", "ariane_barette", "yanick_sageau", "madyson_mcclean", "justine_labelle", "sabrina_leclercq")
+for (t in 1:length(nom_diff)) {
+  collabofinal <- data.frame(lapply(collabofinal, function(x) {
+    gsub(nom_diff[t], bon_nom[t], x)})) 
+}
+
+collabofinal <- data.frame(lapply(collabofinal, function(x) {
+ gsub("francis_bourrassa", "francis_bourassa", x)}))
+
+#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+# gsub("louis_philipe_raymond", "louis_philippe_raymond", x)}))
+
+#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+# gsub("madyson_mclean", "madyson_mcclean", x)}))
+
+#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+# gsub("mclean", "mcclean", x)}))
+
+#collabofinal <- data.frame(lapply(collabofinal, function(x) {
+# gsub("frederick_laberge", "frederic_laberge", x)}))
+
+
 
 
 
