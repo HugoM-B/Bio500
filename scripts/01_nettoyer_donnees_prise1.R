@@ -327,7 +327,7 @@ collabofinal<-unique(collabofinal)
 
 #CRÉER LA BASE DE DONNÉES
 
-con <- dbConnect(SQLite(), dbname="reseau508.db")
+con <- dbConnect(SQLite(), dbname="reseau509.db")
 
 tbl_etudiant <-"
 CREATE TABLE etudiant (
@@ -378,9 +378,9 @@ dbListTables(con)
 #bd_cours <- read.cvs(file = )
 #bd_collabo <- read.csv(file = )
 
-dbWriteTable(con, append = TRUE, name = "etudiant", value = etud_unique1, row.names = FALSE, na.rm = TRUE)
-dbWriteTable(con, append = TRUE, name = "cours", value = cours_unique1, row.names = FALSE)
-dbWriteTable(con, append = TRUE, name = "collabo", value =  collabo_unique1, row.names = FALSE)
+dbWriteTable(con, append = TRUE, name = "etudiant", value = etudiant, row.names = FALSE, na.rm = TRUE)
+dbWriteTable(con, append = TRUE, name = "cours", value = cours, row.names = FALSE)
+dbWriteTable(con, append = TRUE, name = "collabo", value =  collabofinal, row.names = FALSE)
 
 #REQUÊTES
 #nombre de liens par étudiants
@@ -388,5 +388,13 @@ sql_requete <- "
 SELECT etudiant1, 
  COUNT"
 
+sql_requete <- "
+SELECT etudiant1, etudiant2, sigle
+FROM collabo
+WHERE sigle LIKE '%ECL404%';"
+sherb  <-dbGetQuery(con, sql_requete)
+head(sherb)
+
+
 #-----------------------------------------------------
-hg help
+
