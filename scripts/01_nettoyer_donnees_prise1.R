@@ -309,24 +309,16 @@ for (t in 1:length(nom_diff)) {
     gsub(nom_diff[t], bon_nom[t], x)})) 
 }
 
-collabofinal <- data.frame(lapply(collabofinal, function(x) {
- gsub("francis_bourrassa", "francis_bourassa", x)}))
+collabofinal<-unique(collabofinal)
 
-#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
-# gsub("louis_philipe_raymond", "louis_philippe_raymond", x)}))
-
-#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
-# gsub("madyson_mclean", "madyson_mcclean", x)}))
-
-#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
-# gsub("mclean", "mcclean", x)}))
-
-#collabofinal <- data.frame(lapply(collabofinal, function(x) {
-# gsub("frederick_laberge", "frederic_laberge", x)}))
-
-
-
-
+unique_cours_collab<-unique(collabofinal$sigle)
+unique_cours<-unique(cours$sigle)
+nom_diffcours<-setdiff(unique_cours_collab, unique_cours)
+bon_nomcours<-c("GBI104", "1", "GAE550", "ECL404")
+for (w in 1:length(nom_diffcours)) {
+  collabofinal <- data.frame(lapply(collabofinal, function(x) {
+    gsub(nom_diffcours[w], bon_nomcours[w], x)})) 
+}
 
 
 
