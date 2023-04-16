@@ -309,8 +309,6 @@ for (t in 1:length(nom_diff)) {
     gsub(nom_diff[t], bon_nom[t], x)})) 
 }
 
-collabofinal<-unique(collabofinal)
-
 unique_cours_collab<-unique(collabofinal$sigle)
 unique_cours<-unique(cours$sigle)
 nom_diffcours<-setdiff(unique_cours_collab, unique_cours)
@@ -320,6 +318,7 @@ for (w in 1:length(nom_diffcours)) {
     gsub(nom_diffcours[w], bon_nomcours[w], x)})) 
 }
 
+collabofinal<-unique(collabofinal)
 
 
 #CRÉER LA BASE DE DONNÉES
