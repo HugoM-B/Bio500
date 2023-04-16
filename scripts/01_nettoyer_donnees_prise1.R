@@ -264,7 +264,7 @@ collabo$etudiant2<-collabo$etudiant11
 collabofinal<-collabo[,c(1:4)]
 collabofinal<- unique(collabofinal)
 
-rm(collaboNa,collaboSNA)
+rm(collaboNa,collaboSNA, collaboNasave, collaboNasave2)
 
 
 
@@ -318,7 +318,11 @@ for (w in 1:length(nom_diffcours)) {
     gsub(nom_diffcours[w], bon_nomcours[w], x)})) 
 }
 
-collabofinal<-unique(collabofinal1)
+collabofinal<-collabofinal1
+rm(collabofinal1)
+collabofinal<-subset(collabofinal,collabofinal$sigle!="GBI105" & collabofinal!="GAE500")
+collabofinal <- subset(collabofinal, complete.cases(collabofinal$etudiant1))
+collabofinal<-unique(collabofinal)
 
 
 #CRÉER LA BASE DE DONNÉES
