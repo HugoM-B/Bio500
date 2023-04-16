@@ -77,6 +77,7 @@ etudiant_9<-etudiant_9[,1:8]
 colnames(etudiant_4)<-c('prenom_nom',"prenom" ,"nom","region_administrative","regime_coop","formation_prealable","annee_debut","programme")
 etudiant<-rbind(etudiant_1,etudiant_2,etudiant_3,etudiant_4,etudiant_5,etudiant_6,etudiant_7,etudiant_8,etudiant_9,etudiant_10)
 
+rm(collaboration_1,collaboration_2,collaboration_3,collaboration_4,collaboration_5,collaboration_6,collaboration_7,collaboration_8,collaboration_9,collaboration_10,cour_1,cour_2,cour_3,cour_4,cour_5,cour_6,cour_7,cour_8,cour_9,cour_10,etudiant_1,etudiant_2,etudiant_3,etudiant_4,etudiant_5,etudiant_6,etudiant_7,etudiant_8,etudiant_9,etudiant_10)
 #-----------------------------------------------------
 # 2.
 library(RSQLite)
@@ -95,130 +96,119 @@ cours <- data.frame(lapply(cours, function(x) {
 collabo <- data.frame(lapply(collabo, function(x) {
   gsub(" ", "", x)}))
 
-etudiant_unique<-unique(etudiant)
-cours_unique<-unique(cours)
+etudiant <- data.frame(lapply(etudiant, function(x) {
+  gsub("<a0>", "", x) }))
+collabo <- data.frame(lapply(collabo, function(x) {
+  gsub("<a0>", "", x) }))
+
+etudiant<-unique(etudiant)
+cours<-unique(cours)
 collabo<-unique(collabo)
 
-etud_unique1 <- subset(etudiant_unique, complete.cases(etudiant_unique$prenom_nom))
-cours_unique1 <- subset(cours_unique, complete.cases(cours_unique$sigle))
+etudiant <- subset(etudiant, complete.cases(etudiant$prenom_nom))
+cours<- subset(cours, complete.cases(cours$sigle))
 collabo <- subset(collabo, complete.cases(collabo$etudiant1))
-etud_unique1 <-as.data.frame(etud_unique1) 
-cours_unique1 <-as.data.frame(unique(cours_unique1))
+etudiant <-as.data.frame(etudiant) 
+cours <-as.data.frame(cours)
 collabo <-as.data.frame(collabo)
 
 
 ###nettoyer cours
-cours_unique1<-cours_unique1[!duplicated(cours_unique1$sigle),]
+cours<-cours[!duplicated(cours$sigle),]
 
-####nettoyer ?tudiant
-testetud<-subset(etud_unique1, complete.cases(etud_unique1$regime_coop))
-testetudnoinfo<-subset(etud_unique1, !complete.cases(etud_unique1$regime_coop))
-
-
-testetudnoinfo$test<-is.element(testetudnoinfo$prenom_nom,testetud$prenom_nom)
-testetudnoinfo<-subset(testetudnoinfo,testetudnoinfo$test==FALSE)
-testetudnoinfo<-testetudnoinfo[,-9]
-etudiant_nom<-rbind(testetud,testetudnoinfo)
+####nettoyer étudiant avec info vs pas info
+etud<-subset(etudiant, complete.cases(etudiant$regime_coop))
+etudnoinfo<-subset(etudiant, !complete.cases(etudiant$regime_coop))
 
 
+etudnoinfo$doublons<-is.element(etudnoinfo$prenom_nom,etud$prenom_nom)
+etudnoinfo<-subset(etudnoinfo,etudnoinfo$doublons==FALSE)
+etudnoinfo<-etudnoinfo[,-9]
+etudiant<-rbind(etud,etudnoinfo)
+rm(etud,etudnoinfo)
 
-collabofinal <- data.frame(lapply(collabofinal, function(x) {
+
+collabo <- data.frame(lapply(collabo, function(x) {
   gsub("francis_bourrassa", "francis_bourassa", x)}))
 
-etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+etudiant<- data.frame(lapply(etudiant, function(x) {
   gsub("louis_philipe_raymond", "louis_philippe_raymond", x)}))
 
-etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+etudiant<- data.frame(lapply(etudiant, function(x) {
   gsub("madyson_mclean", "madyson_mcclean", x)}))
 
-etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+etudiant<- data.frame(lapply(etudiant, function(x) {
   gsub("mclean", "mcclean", x)}))
 
-collabofinal <- data.frame(lapply(collabofinal, function(x) {
+collabo <- data.frame(lapply(collabo, function(x) {
   gsub("frederick_laberge", "frederic_laberge", x)}))
 
-#-----------------------------------------------------
-# Ajouter les lignes d'étudiants manquantes dans etudiant
-#-----------------------------------------------------
-
-# Voir qui il manque --------------------Pour la fin
-unique_et1_c<-unique(collabofinal$etudiant1)
-unique_etudiant<-unique(etudiant_nom$prenom_nom)
-setdiff(unique_et1_c, unique_etudiant)
-
-#Ajouter qui il manque----------------------------------- CHANGER LE CODE!!!!
-donnees_abs <- c("eloise_bernier", "eloise", "bernier", NA, NA, NA, NA, NA, "naomie_morin", "naomie", "morin", NA, NA, NA, NA, NA, "karim_hamzaoui", "karim", "hamzaoui", NA, NA, NA, NA, NA, "gabrielle_moreault", "gabrielle", "moreault", NA, NA, NA, NA, NA, "maxence_comyn", "maxence", "comyn", NA, NA, NA, NA, NA, "maude_viens", "maude", "viens", NA, NA, NA, NA, NA, "louis_philippe_raymond", "louis-philippe", "raymond",NA, NA, NA, NA, NA)
-etudiant_abs <- matrix(donnees_abs, nrow = 7, ncol = 8, byrow = TRUE)
-colnames(etudiant_abs) <- c("prenom_nom", "prenom", "nom", "region_administrative", "regime_coop", "formation_prealable", "annee_debut", "programme")
-etudiant <- rbind(etudiant_nom, etudiant_abs)
-rm(donnees_abs, etudiant_abs)
-
-#-----------------------------------------------------
-# Enlever fausses lignes de collaboration avec soi-même ----------------------CHANGERRR code
-#-----------------------------------------------------
-#collaboration <- subset(collaboration, etudiant1 != etudiant2)
 
 ###loader package stringr
 library(stringr)
 
-etudiant_nom$patterna<-str_sub(etudiant_nom$prenom_nom,1,-5)
-etudiant_nom$patternb<-str_sub(etudiant_nom$prenom_nom,7,-1)
-etudiant_nom$patternc<-str_sub(etudiant_nom$prenom_nom,1,13)
-etudiant_nom$patternd<-str_sub(etudiant_nom$prenom_nom,-15,-1)
+etudiant$patterna<-str_sub(etudiant$prenom_nom,1,-5)
+etudiant$patternb<-str_sub(etudiant$prenom_nom,5,-1)
+etudiant$patternc<-str_sub(etudiant$prenom_nom,1,13)
+etudiant$patternd<-str_sub(etudiant$prenom_nom,-15,-1)
 
-etudiant_nom<-unique(etudiant_nom[!duplicated(etudiant_nom$patterna),])
-etudiant_nom<-unique(etudiant_nom[!duplicated(etudiant_nom$patternb),])
-etudiant_nom<-unique(etudiant_nom[!duplicated(etudiant_nom$patternc),])
-etudiant_nom<-unique(etudiant_nom[!duplicated(etudiant_nom$patternd),])
+etudiant<-unique(etudiant[!duplicated(etudiant$patterna),])
+etudiant<-unique(etudiant[!duplicated(etudiant$patternb),])
+etudiant<-unique(etudiant[!duplicated(etudiant$patternc),])
+etudiant<-unique(etudiant[!duplicated(etudiant$patternd),])
 
-#etudiant_nom<-etudiant_nom[,-c(9,12)]
+
 
 ####Nettoyer collab
+# Enlever collaboration avec soi-même
+#-----------------------------------------------------
+collabo <- subset(collabo, etudiant1 != etudiant2)
+
 
 collabo$pata<-str_sub(collabo$etudiant1 ,1,-5)
-collabo$patb<-str_sub(collabo$etudiant1,7,-1)
+collabo$patb<-str_sub(collabo$etudiant1,5,-1)
 collabo$patc<-str_sub(collabo$etudiant1,1,13)
 collabo$patd<-str_sub(collabo$etudiant1,-15,-1)
 
 collabo$pata2<-str_sub(collabo$etudiant2 ,1,-5)
-collabo$patb2<-str_sub(collabo$etudiant2,7,-1)
+collabo$patb2<-str_sub(collabo$etudiant2,5,-1)
 collabo$patc2<-str_sub(collabo$etudiant2,1,13)
 collabo$patd2<-str_sub(collabo$etudiant2,-15,-1)
 
 ##etudiant 1
-correspondance<-match(collabo$pata, etudiant_nom$patterna)
+correspondance<-match(collabo$pata, etudiant$patterna)
 k<-seq(1,length(collabo$etudiant1),by=1)
-collabo$pata[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+collabo$pata[k]<-etudiant$prenom_nom[correspondance[k]]
 
-correspondance<-match(collabo$patb, etudiant_nom$patternb)
+correspondance<-match(collabo$patb, etudiant$patternb)
 k<-seq(1,length(collabo$etudiant1),by=1)
-collabo$patb[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+collabo$patb[k]<-etudiant$prenom_nom[correspondance[k]]
 
-correspondance<-match(collabo$patc, etudiant_nom$patternc)
+correspondance<-match(collabo$patc, etudiant$patternc)
 k<-seq(1,length(collabo$etudiant1),by=1)
-collabo$patc[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+collabo$patc[k]<-etudiant$prenom_nom[correspondance[k]]
 
-correspondance<-match(collabo$patd, etudiant_nom$patternd)
+correspondance<-match(collabo$patd, etudiant$patternd)
 k<-seq(1,length(collabo$etudiant1),by=1)
-collabo$patd[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+collabo$patd[k]<-etudiant$prenom_nom[correspondance[k]]
 
 
 ##etudiant 2
-correspondance<-match(collabo$pata2, etudiant_nom$patterna)
+correspondance<-match(collabo$pata2, etudiant$patterna)
 k<-seq(1,length(collabo$etudiant2),by=1)
-collabo$pata2[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+collabo$pata2[k]<-etudiant$prenom_nom[correspondance[k]]
 
-correspondance<-match(collabo$patb2, etudiant_nom$patternb)
+correspondance<-match(collabo$patb2, etudiant$patternb)
 k<-seq(1,length(collabo$etudiant2),by=1)
-collabo$patb2[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+collabo$patb2[k]<-etudiant$prenom_nom[correspondance[k]]
 
-correspondance<-match(collabo$patc2, etudiant_nom$patternc)
+correspondance<-match(collabo$patc2, etudiant$patternc)
 k<-seq(1,length(collabo$etudiant2),by=1)
-collabo$patc2[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+collabo$patc2[k]<-etudiant$prenom_nom[correspondance[k]]
 
-correspondance<-match(collabo$patd2, etudiant_nom$patternd)
+correspondance<-match(collabo$patd2, etudiant$patternd)
 k<-seq(1,length(collabo$etudiant2),by=1)
-collabo$patd2[k]<-etudiant_nom$prenom_nom[correspondance[k]]
+collabo$patd2[k]<-etudiant$prenom_nom[correspondance[k]]
 
 
 ###remplacer les valeurs
@@ -274,45 +264,63 @@ collabo$etudiant2<-collabo$etudiant11
 collabofinal<-collabo[,c(1:4)]
 collabofinal<- unique(collabofinal)
 
+rm(collaboNa,collaboSNA)
+
+
+
 #new_name<-c('maude_viens','eloise_bernier','karim_hamzaoui','naomie_morin','justine_lebelle','gabrielle_moreault','maxence_comyn')
 #for(i in 1:7){
 #etudiant_nom[1 + length(etudiant_nom),1]<-new_name[i] 
 #}
 
-num<-seq(1,170,1)
-etudiant_nom[,13]<-num
-etudiant_nom <- subset(etudiant_nom, prenom_nom != 'arianne_barette' & prenom_nom != 'mael_guerin' & prenom_nom != 'marie_burghin' & prenom_nom != 'penelope_robert' 	& prenom_nom != 'philippe_barette' & prenom_nom != 'phillippe_bourassa' & prenom_nom != 'yanick_sagneau' & prenom_nom != 'yannick_sageau' & V13 != 121)
+etudiant<-etudiant[,-c(9:12)]
+
+num<-seq(1,length(etudiant$prenom_nom),1)
+etudiant[,9]<-num
+etudiant <- subset(etudiant, prenom_nom != 'arianne_barette' & prenom_nom != 'mael_guerin' & prenom_nom != 'marie_burghin' & prenom_nom != 'penelope_robert' 	& prenom_nom != 'philippe_barette' & prenom_nom != 'phillippe_bourassa' & prenom_nom != 'yanick_sagneau' & prenom_nom != 'yannick_sageau' )
+etudiant<-etudiant[,c(1:8)]
 
 
+#collabofinal <- data.frame(lapply(collabofinal, function(x) {
+ # gsub("francis_bourrassa", "francis_bourassa", x)}))
 
-collabofinal <- data.frame(lapply(collabofinal, function(x) {
-  gsub("francis_bourrassa", "francis_bourassa", x)}))
+#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+ # gsub("louis_philipe_raymond", "louis_philippe_raymond", x)}))
 
-etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
-  gsub("louis_philipe_raymond", "louis_philippe_raymond", x)}))
+#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+ # gsub("madyson_mclean", "madyson_mcclean", x)}))
 
-etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
-  gsub("madyson_mclean", "madyson_mcclean", x)}))
+#etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
+ # gsub("mclean", "mcclean", x)}))
 
-etudiant_nom<- data.frame(lapply(etudiant_nom, function(x) {
-  gsub("mclean", "mcclean", x)}))
+#collabofinal <- data.frame(lapply(collabofinal, function(x) {
+ # gsub("frederick_laberge", "frederic_laberge", x)}))
 
-collabofinal <- data.frame(lapply(collabofinal, function(x) {
-  gsub("frederick_laberge", "frederic_laberge", x)}))
+
+#-----------------------------------------------------
+# Ajouter les lignes d'étudiants manquantes dans etudiant
+#-----------------------------------------------------
+
+# Voir qui il manque --------------------Pour la fin
+unique_et1_c<-unique(collabo$etudiant1)
+unique_etudiant<-unique(etudiant$prenom_nom)
+nom_manquant1<-setdiff(unique_et1_c, unique_etudiant)
 
 #Ajouter qui il manque----------------------------------- CHANGER LE CODE!!!!
 donnees_abs <- c("eloise_bernier", "eloise", "bernier", NA, NA, NA, NA, NA, "naomie_morin", "naomie", "morin", NA, NA, NA, NA, NA, "karim_hamzaoui", "karim", "hamzaoui", NA, NA, NA, NA, NA, "gabrielle_moreault", "gabrielle", "moreault", NA, NA, NA, NA, NA, "maxence_comyn", "maxence", "comyn", NA, NA, NA, NA, NA, "maude_viens", "maude", "viens", NA, NA, NA, NA, NA, "louis_philippe_raymond", "louis-philippe", "raymond",NA, NA, NA, NA, NA)
 etudiant_abs <- matrix(donnees_abs, nrow = 7, ncol = 8, byrow = TRUE)
 colnames(etudiant_abs) <- c("prenom_nom", "prenom", "nom", "region_administrative", "regime_coop", "formation_prealable", "annee_debut", "programme")
-etudiant_nom<-etudiant_nom[,c(1:8)]
-etudiant <- rbind(etudiant_nom, etudiant_abs)
+etudiant <- rbind(etudiant, etudiant_abs)
 rm(donnees_abs, etudiant_abs)
+
+unique_et1_c<-unique(collabo$etudiant1)
+unique_etudiant<-unique(etudiant$prenom_nom)
+setdiff(unique_et1_c, unique_etudiant)
+
 
 etudiant<-unique(etudiant)
 
-# Enlever fausses lignes de collaboration avec soi-même ----------------------CHANGERRR code
-#-----------------------------------------------------
-collaboration <- subset(collaboration, etudiant1 != etudiant2)
+
 
 
 
