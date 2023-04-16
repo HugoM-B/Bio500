@@ -384,14 +384,13 @@ dbWriteTable(con, append = TRUE, name = "collabo", value =  collabofinal, row.na
 
 #REQUÊTES
 #nombre de liens par étudiants
-sql_requete <- "
-SELECT etudiant1, 
- COUNT"
 
 sql_requete <- "
-SELECT etudiant1, etudiant2, sigle
+SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
 FROM collabo
-WHERE sigle LIKE '%ECL404%';"
+WHERE sigle LIKE '%ECL404%'
+GROUP BY sigle
+ORDER BY nb_collab DESC;"
 sherb  <-dbGetQuery(con, sql_requete)
 head(sherb)
 
