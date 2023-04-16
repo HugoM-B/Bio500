@@ -312,15 +312,15 @@ for (t in 1:length(nom_diff)) {
 unique_cours_collab<-unique(collabofinal$sigle)
 unique_cours<-unique(cours$sigle)
 nom_diffcours<-setdiff(unique_cours_collab, unique_cours)
-bon_nomcours<-c("GBI104", "1", "GAE550", "ECL404")
+bon_nomcours<-c("GBI104", "1NA", "GAE550", "ECL404")
 for (w in 1:length(nom_diffcours)) {
-  collabofinal <- data.frame(lapply(collabofinal, function(x) {
+  collabofinal1 <- data.frame(lapply(collabofinal, function(x) {
     gsub(nom_diffcours[w], bon_nomcours[w], x)})) 
 }
 
-collabofinal<-unique(collabofinal)
+collabofinal<-unique(collabofinal1)
 
-d
+
 #CRÉER LA BASE DE DONNÉES
 
 con <- dbConnect(SQLite(), dbname="reseau508.db")
