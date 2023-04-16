@@ -320,7 +320,7 @@ for (w in 1:length(nom_diffcours)) {
 
 collabofinal<-unique(collabofinal)
 
-
+d
 #CRÉER LA BASE DE DONNÉES
 
 con <- dbConnect(SQLite(), dbname="reseau508.db")
