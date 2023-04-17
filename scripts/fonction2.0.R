@@ -3,8 +3,9 @@
 # Victor Cameron
 # 15 mars 2023
 ######################################################
-setwd('C:/Users/foduf/OneDrive/Bureau/méthode/BIO500')
+#setwd('C:/Users/foduf/OneDrive/Bureau/méthode/BIO500')
 #setwd("C:/Users/Hugo/Documents/methode/Bio500")
+setwd("C:/Users/foduf/Desktop/methode/Bio500")
 ######################################################
 ## Etapes (*À ADAPTER*)
 # 1. Charger tous les donnees provenants du dossier data/raw
@@ -56,6 +57,7 @@ for(tab in tabNames) {
   }
 }
 
+
 # nettoyer des objets temporaires utilisé dans la boucle
 rm(list = c('allFiles', 'tab', 'tabFiles', 'tabName', 'ficher', 'groupe'))
 i<-seq(1,11,1)
@@ -77,12 +79,18 @@ etudiant_4<-etudiant_4[,1:8]
 etudiant_9<-etudiant_9[,1:8]
 colnames(etudiant_4)<-c('prenom_nom',"prenom" ,"nom","region_administrative","regime_coop","formation_prealable","annee_debut","programme")
 etudiant<-rbind(etudiant_1,etudiant_2,etudiant_3,etudiant_4,etudiant_5,etudiant_6,etudiant_7,etudiant_8,etudiant_9,etudiant_10)
-return(etudiant,)
+list_table<-list(etudiant = etudiant,cours = cours ,collabo = collabo)
+return(list_table)
 }
-import_function()
 #-----------------------------------------------------
+
 # 2.
-nettoyage_function<-function(etudiant,cours,collabo){
+nettoyage_function<-function(x){
+  
+etudiant<-x[[1]]
+cours<-x[[2]]
+collabo<-x[[3]]
+ 
 library(RSQLite)
 #retiré les traits d'union et les remplacer par des 'underscore'
 etudiant <- data.frame(lapply(etudiant, function(x) {
