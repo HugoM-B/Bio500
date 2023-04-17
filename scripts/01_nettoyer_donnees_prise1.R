@@ -4,7 +4,8 @@
 # 15 mars 2023
 ######################################################
 #setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
-setwd("C:/Users/Hugo/Documents/methode/Bio500")
+#setwd("C:/Users/Hugo/Documents/methode/Bio500")
+setwd("C:/Users/foduf/Desktop/methode/Bio500")
 ######################################################
 ## Etapes (*À ADAPTER*)
 # 1. Charger tous les donnees provenants du dossier data/raw
@@ -322,7 +323,8 @@ collabofinal<-collabofinal1
 rm(collabofinal1)
 collabofinal<-subset(collabofinal,collabofinal$sigle!="GBI105" & collabofinal!="GAE500")
 collabofinal <- subset(collabofinal, complete.cases(collabofinal$etudiant1))
-collabofinal<-unique(collabofinal)
+collabo<-unique(collabofinal)
+rm(collabofinal)
 
 
 #CRÉER LA BASE DE DONNÉES
