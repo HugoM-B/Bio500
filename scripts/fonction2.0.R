@@ -384,21 +384,37 @@ CREATE TABLE collabo (
   
   return(con)
 }
+getwd()
 
-
-
+install.packages("RSQLite")
+library(RSQLite)
 
   #REQUÊTES
   #nombre de liens par étudiants
   
-  #sql_requete <- "
-#SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
-#WHERE sigle LIKE '%ECL404%'
-#GROUP BY sigle
-#ORDER BY nb_collab DESC;"
-  #sherb  <-dbGetQuery(con, sql_requete)
-  #head(sherb)
+  sql_requete <- "
+SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
+FORM collabo
+GROUP BY sigle
+  ;"
+con<-dbConnect(SQLite(),dbname="/Users/roros/OneDrive/Documents/méthodologie computationelle/BIO500 Équipe.db")
+liens <-  dbGetQuery(con, sql_requete)
+head(liens)
   
+#esq l'année de début du bac influence la collaboration en étudiants
+#sortir les collaboration ou les étudiants dans la même année collabore puis sortir les collaborations ou les étudiants ne sont pas 
+#dans la même année puis faire un prorata 
+
+  sql_requete <- "
+SELECT etudiant1, etudiant2
+FROM collabo
+JOIN etudiant ON collabo.primaryKey = etudiant.foreing.Key
+ WHERE annee_debut$etudiant2 = annee_debut$etudiant2
+  ;"
+  
+collabo_meme_annee <- dbGetQuery(con, sql_requete)
+head(collabo_meme_annee)
+
   
   #-----------------------------------------------------
   
