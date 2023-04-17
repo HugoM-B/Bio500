@@ -1,8 +1,10 @@
-getwd()
-setwd("C:/Users/foduf/OneDrive/Bureau/méthode/BIO500")
+
+#setwd("C:/Users/foduf/OneDrive/Bureau/méthode/BIO500")
+#setwd("C:/Users/foduf/Desktop/methode/Bio500")
 library(targets)
-library(tarchetypes)
-source("fonction2.0.R")
+library(tarchetypes) # Utilisé pour render le rapport (tar_render)
+tar_option_set(packages = c("rmarkdown","knitr")) # Charger les libraries dans l'environnement global
+source("scripts/fonction2.0.R")
 list(
   tar_target(
     name = path, # Cible
@@ -13,9 +15,17 @@ list(
     name = file_paths, # Cible
     command = list.files(path, full.names = TRUE) # Liste les fichiers dans le dossier
   ),
-  #Lecture des données
-  tar_target(table,import_function()),
-  #correction des donnees
-  tar_target(etudiant,gsub_trait_union(etudiant)),
+ tar_target(
+   name = list_table_avant_nettoyage, # Cible
+   command = import_function
+ ),
+ tar_target(
+   name = list_table_apres_nettoyage, # Cible
+   command = nettoyage_function(list_table_avant_nettoyage)
+ ),
+ tar_target(
+   name = con, # retourner con pour les requêtes à venir
+   command = create_data.base_func(list_table_apres_nettoyage)
+ )
 )
 

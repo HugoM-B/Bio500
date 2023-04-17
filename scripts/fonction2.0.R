@@ -320,10 +320,10 @@ nettoyage_function<-function(x){
 } 
 list2<-nettoyage_function(list)
 
-
   #CRÉER LA BASE DE DONNÉES
 create_data.base_func<-function(x){
-  con <- dbConnect(SQLite(), dbname="reseau509.db")
+  
+  con <- dbConnect(SQLite(), dbname="reseau500.db")
   
   etudiant<-x[[1]]
   cours<-x[[2]]
@@ -380,7 +380,9 @@ CREATE TABLE collabo (
   
   dbWriteTable(con, append = TRUE, name = "etudiant", value = etudiant, row.names = FALSE, na.rm = TRUE)
   dbWriteTable(con, append = TRUE, name = "cours", value = cours, row.names = FALSE)
-  dbWriteTable(con, append = TRUE, name = "collabo", value =  collabofinal, row.names = FALSE)
+  dbWriteTable(con, append = TRUE, name = "collabo", value =  collabo, row.names = FALSE)
+  
+  return(con)
 }
 
 
@@ -389,14 +391,13 @@ CREATE TABLE collabo (
   #REQUÊTES
   #nombre de liens par étudiants
   
-  sql_requete <- "
-SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
-FROM collabo
-WHERE sigle LIKE '%ECL404%'
-GROUP BY sigle
-ORDER BY nb_collab DESC;"
-  sherb  <-dbGetQuery(con, sql_requete)
-  head(sherb)
+  #sql_requete <- "
+#SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
+#WHERE sigle LIKE '%ECL404%'
+#GROUP BY sigle
+#ORDER BY nb_collab DESC;"
+  #sherb  <-dbGetQuery(con, sql_requete)
+  #head(sherb)
   
   
   #-----------------------------------------------------
