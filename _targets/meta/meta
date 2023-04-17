@@ -1,0 +1,14 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+con|stem|0ddc1b29224c7e18|34924fcf25092328|09ce2389659b26bf|-1614524628||t19464.6730499055s|7c08b6911a348b50|283|rds|local|vector|||0.15|Closing open result set, pending rows. Closing open result set, pending rows. Closing open result set, pending rows|
+create_data.base_func|function|c0286406689fca25|||||||||||||||
+directory|object|92c8ddc1187e78de|||||||||||||||
+file_paths|stem|64a9162524939925|71948d4e0817f43c|3fa26787f7d1831b|1115504559||t19464.6730419863s|6c088a07ec7dbe69|213|rds|local|vector|||0||
+import_function|function|17eaee72d677ec58|||||||||||||||
+list|object|0c20b7e70ab4da69|||||||||||||||
+list_table_apres_nettoyage|stem|fe979c7b829b0cdb|d9ff7c6d5f7d28bf|6735b56b91462e53|-573066442||t19464.6730480673s|8d83b6fbb369e833|25119|rds|local|vector|||0.45||
+list_table_avant_nettoyage|stem|1638ce59564b6761|76fe825d5e6c3163|0f31e0c28acad42d|-1573553367||t19464.6730426878s|731b472be796a6b7|24214|rds|local|vector|||0.03||
+list2|object|c51440c097fd008c|||||||||||||||
+nettoyage_function|function|5bbe0aa188ed9caf|||||||||||||||
+path|stem|7f2b17405d412ffd|10dcbbfae736baf7|ef46db3751d8e999|-1383433547|donnees_BIO500/raw|t19463.9878050012s|c7827d29f759aa2c|8192|file|local|vector|||0.25|le package RSQLite a été compilé avec la version R 4.2.3|
+rapport|stem|82a64a76d264aecd|9b10d1efde4e6761|33a416f8d6218e19|-316371949|rapport/rapport.html*rapport/rapport.Rmd|t19464.6709418106s|2a206356ac94495d|638872|file|local|vector|||1.16|le package RSQLite a été compilé avec la version R 4.2.3|
+table_names|object|34994013e0c0536c|||||||||||||||

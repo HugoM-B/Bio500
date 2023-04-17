@@ -7,14 +7,18 @@
 #setwd("C:/Users/Hugo/Documents/methode/Bio500")
 setwd("C:/Users/foduf/Desktop/methode/Bio500")
 
-import_function<-function(x){
-  allFiles <- dir('donnees_BIO500/raw')
+directory<-"donnees_BIO500/raw"
+table_names<-list.files(directory, full.names = TRUE)
+
+
+import_function<-function(directory,table_names){
+  allFiles <- dir(directory)
   
   # Tables à fusioner
   tabNames <- c('collaboration', 'cour', 'etudiant')
   
   # Nombre de groupes
-  nbGroupe <- length(grep(tabNames[1], allFiles))
+  nbGroupe <- length(grep(tabNames[1], table_names))
   
   # Charger les donnees
   for(tab in tabNames) {
@@ -38,7 +42,7 @@ import_function<-function(x){
   }
   
   # nettoyer des objets temporaires utilisé dans la boucle
-  rm(list = c('allFiles', 'tab', 'tabFiles', 'tabName', 'ficher', 'groupe'))
+  rm(list = c('table_names', 'tab', 'tabFiles', 'tabName', 'ficher', 'groupe'))
   i<-seq(1,11,1)
   # combiner les tableaux
   #collaboration
@@ -60,11 +64,11 @@ import_function<-function(x){
   etudiant<-rbind(etudiant_1,etudiant_2,etudiant_3,etudiant_4,etudiant_5,etudiant_6,etudiant_7,etudiant_8,etudiant_9,etudiant_10)
   
   rm(collaboration_1,collaboration_2,collaboration_3,collaboration_4,collaboration_5,collaboration_6,collaboration_7,collaboration_8,collaboration_9,collaboration_10,cour_1,cour_2,cour_3,cour_4,cour_5,cour_6,cour_7,cour_8,cour_9,cour_10,etudiant_1,etudiant_2,etudiant_3,etudiant_4,etudiant_5,etudiant_6,etudiant_7,etudiant_8,etudiant_9,etudiant_10)
-list_table<-list(etudiant = etudiant,cours = cours ,collabo = collabo)
-return(list_table)
+  list_table<-list(etudiant = etudiant,cours = cours ,collabo = collabo)
+  return(list_table)
 }
 #-----------------------------------------------------
-list<-import_function()
+list<-import_function(directory = directory,table_names = table_names)
 # 2.
 
 nettoyage_function<-function(x){
@@ -318,6 +322,7 @@ nettoyage_function<-function(x){
   list<-list(etudiant,cours,collabo)
   return(list)
 } 
+
 list2<-nettoyage_function(list)
 
   #CRÉER LA BASE DE DONNÉES
@@ -388,6 +393,7 @@ CREATE TABLE collabo (
 
 
 
+
   #REQUÊTES
   #nombre de liens par étudiants
   
@@ -401,5 +407,3 @@ CREATE TABLE collabo (
   
   
   #-----------------------------------------------------
-  
- 
