@@ -4,12 +4,12 @@ Le projet a pour but d'analyser les interactions entre les étudiants d'écologi
 
 # Scripts
 
-[![](https://img.shields.io/badge/R-Scripts-blue)](https://github.com/HugoM-B/Bio500/tree/main/scripts)
+[![](https://img.shields.io/badge/R-Script_brut-blue)](https://github.com/HugoM-B/Bio500/blob/main/scripts/01_nettoyer_donnees_prise1.R) [![](https://img.shields.io/badge/R-Script_clean-blue)](https://github.com/HugoM-B/Bio500/blob/main/scripts/fonction2.0.R)
 
 - Code d'importation, de nettoyage et d'injection des données
 - Requettes sql
 - script pour les figures
-- Script dans une version compatible avec target
+- Script dans une version compatible avec target (clean)
 
 # Donnees_BIO500 raw
 
