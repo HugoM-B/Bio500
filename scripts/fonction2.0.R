@@ -5,7 +5,7 @@
 ######################################################
 #setwd('C:/Users/foduf/OneDrive/Bureau/méthode/BIO500')
 #setwd("C:/Users/Hugo/Documents/methode/Bio500")
-setwd("C:/Users/foduf/Desktop/methode/Bio500")
+#setwd("C:/Users/foduf/Desktop/methode/Bio500")
 
 directory<-"donnees_BIO500/raw"
 table_names<-list.files(directory, full.names = TRUE)
@@ -398,28 +398,28 @@ library(RSQLite)
   #REQUÊTES
   #nombre de liens par étudiants
   
-  sql_requete <- "
-SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
-FORM collabo
-GROUP BY sigle
-  ;"
-con<-dbConnect(SQLite(),dbname="/Users/roros/OneDrive/Documents/méthodologie computationelle/BIO500 Équipe.db")
-liens <-  dbGetQuery(con, sql_requete)
-head(liens)
+ # sql_requete <- "
+#SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
+#FORM collabo
+#GROUP BY sigle
+#  ;"
+#con<-dbConnect(SQLite(),dbname="/Users/roros/OneDrive/Documents/méthodologie computationelle/BIO500 Équipe.db")
+#liens <-  dbGetQuery(con, sql_requete)
+#head(liens)
   
 #esq l'année de début du bac influence la collaboration en étudiants
 #sortir les collaboration ou les étudiants dans la même année collabore puis sortir les collaborations ou les étudiants ne sont pas 
 #dans la même année puis faire un prorata 
 
-  sql_requete <- "
-SELECT etudiant1, etudiant2
-FROM collabo
-JOIN etudiant ON collabo.primaryKey = etudiant.foreing.Key
- WHERE annee_debut$etudiant2 = annee_debut$etudiant2
-  ;"
+ # sql_requete <- "
+#SELECT etudiant1, etudiant2
+#FROM collabo
+#JOIN etudiant ON collabo.primaryKey = etudiant.foreing.Key
+# WHERE annee_debut$etudiant2 = annee_debut$etudiant2
+ # ;"
   
-collabo_meme_annee <- dbGetQuery(con, sql_requete)
-head(collabo_meme_annee)
+#collabo_meme_annee <- dbGetQuery(con, sql_requete)
+#head(collabo_meme_annee)
 
   
   #-----------------------------------------------------

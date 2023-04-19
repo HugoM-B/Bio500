@@ -1,6 +1,6 @@
 
 #setwd("C:/Users/foduf/OneDrive/Bureau/méthode/BIO500")
-setwd("C:/Users/foduf/Desktop/methode/Bio500")
+#setwd("C:/Users/foduf/Desktop/methode/Bio500")
 library(targets)
 library(tarchetypes) # Utilisé pour render le rapport (tar_render)
 
@@ -25,7 +25,7 @@ list(
    command = nettoyage_function(list_table_avant_nettoyage)
  ),
  tar_target(
-   name = con, # retourner con pour les requêtes à venir
+   name = con,  #retourner con pour les requêtes à venir
    command = create_data.base_func(list_table_apres_nettoyage)
  ),
  tar_render(
