@@ -25,6 +25,6 @@ Le projet a pour but d'analyser les interactions entre les étudiants d'écologi
 
 # Targets
 
-[![](https://img.shields.io/badge/R-targets-bleu)](https://github.com/HugoM-B/Bio500/blob/main/_targets.R) [![](https://img.shields.io/badge/rep-targets-yellow)](https://github.com/HugoM-B/Bio500/tree/main/_targets)
+[![](https://img.shields.io/badge/R-targets-blue)](https://github.com/HugoM-B/Bio500/blob/main/_targets.R) [![](https://img.shields.io/badge/rep-targets-yellow)](https://github.com/HugoM-B/Bio500/tree/main/_targets)
 
 - Pipline target ainsi que les fichiers liés à celui-ci
