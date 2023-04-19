@@ -425,8 +425,8 @@ head(pm_ad_collabo)
 #Requête pour la région administrative des élèves
 #même région
 sql_requete <- "
-SELECT etudiant1, etudiant2
-COUNT(*) AS regions_administratives, e1.region_administrative, e2.region_administratibe
+SELECT etudiant1, etudiant2,
+COUNT(*) AS regions_administratives, e1.region_administrative, e2.region_administrative
 FROM collabo
 JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
 JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
@@ -442,8 +442,8 @@ head(mm_ra_collabo)
 #pas la même région
 
 sql_requete <- "
-SELECT etudiant1, etudiant2
-COUNT(*) AS regions_administratives, e1.region_administrative, e2.region_administratibe
+SELECT etudiant1, etudiant2,
+COUNT(*) AS regions_administratives, e1.region_administrative, e2.region_administrative
 FROM collabo
 JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
 JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
