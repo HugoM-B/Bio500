@@ -1,3 +1,3 @@
 # Bio500
 
-Il faudra ajouter une description du projet ici
+Le projet a pour but d'analyser les interactions entre les étudiants de biologie de l'Udes. Les manipulations et les analyses essaieront de démontrer si le système obtenu est comparable à ce qu'on retrouve dans un écosystème naturel. Pour se faire, des données provenant des collaborations scolaires des étudiants du cours de BIO500 de l'hiver 2023 serviront de point de départ au projet. Plusieurs blocs s'enchaineront afin d'assurer le nettoyage des données, la mise en place de targets pour permettre la reproductibilité de l'expérience, la visualisation des données et la communication des résultats obtenus. Po ur finir, une comparaison sera rapporté afin de faire un parallèle bouetteux (jk) entre les interactions des individus d'une classe et celles présentes dans un écosystème naturel.
