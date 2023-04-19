@@ -396,6 +396,6 @@ ORDER BY nb_collab DESC;"
 sherb  <-dbGetQuery(con, sql_requete)
 head(sherb)
 
-
+miettes 
 #-----------------------------------------------------
 
