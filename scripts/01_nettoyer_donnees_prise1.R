@@ -5,7 +5,7 @@
 ######################################################
 #setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
 #setwd("C:/Users/Hugo/Documents/methode/Bio500")
-setwd("C:/Users/foduf/Desktop/methode/Bio500")
+#setwd("C:/Users/foduf/Desktop/methode/Bio500")
 ######################################################
 ## Etapes (*À ADAPTER*)
 # 1. Charger tous les donnees provenants du dossier data/raw
@@ -386,16 +386,75 @@ dbWriteTable(con, append = TRUE, name = "collabo", value =  collabofinal, row.na
 
 #REQUÊTES
 #nombre de liens par étudiants
+#Requete pour savoir les ollaborations entre étudiants de la même chohorte
+
+sql_requete <-
+"SELECT c.etudiant1, c.etudiant2,
+COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
+FROM collabo c 
+JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
+JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
+WHERE 
+e1.annee_debut = e2.annee_debut
+GROUP BY 
+c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
+ORDER BY 
+nb_collaborations DESC
+;"
+mm_ad_collabo  <-dbGetQuery(con, sql_requete)
+head(mm_ad_collabo)
+
+#requete pour savoir le nombre de collabo etre élèves PAS de la mm cohorte
+
+sql_requete <-
+  "SELECT c.etudiant1, c.etudiant2,
+COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
+FROM collabo c 
+JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
+JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
+WHERE 
+e1.annee_debut <> e2.annee_debut
+GROUP BY 
+c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
+ORDER BY 
+nb_collaborations DESC
+;"
+pm_ad_collabo  <-dbGetQuery(con, sql_requete)
+head(pm_ad_collabo)
+
+#Requête pour la région administrative des élèves
+#même région
+sql_requete <- "
+SELECT etudiant1, etudiant2
+COUNT(*) AS regions_administratives, e1.region_administrative, e2.region_administratibe
+FROM collabo
+JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
+JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
+WHERE
+e1.region_administrative = e2.region_administrative
+GROUP BY 
+etudiant1, etudiant2, e1.region_administrative, e2.region_administrative
+;"
+
+mm_ra_collabo  <-dbGetQuery(con, sql_requete)
+head(mm_ra_collabo)
+
+#pas la même région
 
 sql_requete <- "
-SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
+SELECT etudiant1, etudiant2
+COUNT(*) AS regions_administratives, e1.region_administrative, e2.region_administratibe
 FROM collabo
-WHERE sigle LIKE '%ECL404%'
-GROUP BY sigle
-ORDER BY nb_collab DESC;"
-sherb  <-dbGetQuery(con, sql_requete)
-head(sherb)
+JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
+JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
+WHERE
+e1.region_administrative <> e2.region_administrative
+GROUP BY 
+etudiant1, etudiant2, e1.region_administrative, e2.region_administrative
+;"
 
+pm_ra_collabo  <-dbGetQuery(con, sql_requete)
+head(pm_ra_collabo)
 
 #-----------------------------------------------------
 
