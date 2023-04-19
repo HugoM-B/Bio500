@@ -387,15 +387,24 @@ dbWriteTable(con, append = TRUE, name = "collabo", value =  collabofinal, row.na
 #REQUÊTES
 #nombre de liens par étudiants
 
-sql_requete <- "
-SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
-FROM collabo
-WHERE sigle LIKE '%ECL404%'
-GROUP BY sigle
-ORDER BY nb_collab DESC;"
+
+sql_requete <- "SELECT c.etudiant1, c.etudiant2,
+COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
+FROM collabo c 
+JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
+JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
+WHERE 
+e1.annee_debut = e2.annee_debut
+GROUP BY 
+c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
+ORDER BY 
+nb_collaborations DESC
+;"
 sherb  <-dbGetQuery(con, sql_requete)
 head(sherb)
 
-miettes 
+
+
+
 #-----------------------------------------------------
 
