@@ -476,5 +476,11 @@ etudiant1, etudiant2, e1.region_administrative, e2.region_administrative
 pm_ra_collabo  <-dbGetQuery(con, sql_requete)
 head(pm_ra_collabo)
 
+#Graphique de centralité
+
+plot(g, vertex.label=NA, edge.arrow.mode = 0,
+     vertex.frame.color = NA,
+     layout = layout.circle(g))
+
 #-----------------------------------------------------
 
