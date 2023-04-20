@@ -386,8 +386,26 @@ dbWriteTable(con, append = TRUE, name = "collabo", value =  collabofinal, row.na
 
 #REQUÊTES
 #nombre de liens par étudiants
-#Requete pour savoir les ollaborations entre étudiants de la même chohorte
 
+sql_requete <- "
+SELECT DISTINCT etudiant1
+ COUNT(etudiant1) AS liens_etudiant
+ FROM collabo
+;"
+
+liens <-dbGetQuery(con, sql_requete)
+head(liens)
+
+#Décompte de liens par paire d'étudiants
+sql_requete <- "
+SELECT DISTINCT etudiant1, etudiant2
+ COUNT(etudiant 1, etudiant2) AS liens_paire
+ FROM collabo;"
+
+liens_paires <-dbGetQuery(con, sql_requete)
+head(liens_paires)
+
+#Requete pour savoir les Collaborations entre étudiants de la même chohorte
 sql_requete <-
 "SELECT c.etudiant1, c.etudiant2,
 COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
@@ -426,7 +444,7 @@ head(pm_ad_collabo)
 #même région
 sql_requete <- "
 SELECT etudiant1, etudiant2,
-COUNT(*) AS regions_administratives, e1.region_administrative, e2.region_administrative
+COUNT(*) AS nb_collaborations, e1.region_administrative, e2.region_administrative
 FROM collabo
 JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
 JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
@@ -443,7 +461,7 @@ head(mm_ra_collabo)
 
 sql_requete <- "
 SELECT etudiant1, etudiant2,
-COUNT(*) AS regions_administratives, e1.region_administrative, e2.region_administrative
+COUNT(*) AS nb_collaborations, e1.region_administrative, e2.region_administrative
 FROM collabo
 JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
 JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
