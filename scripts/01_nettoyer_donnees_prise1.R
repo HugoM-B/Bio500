@@ -4,7 +4,7 @@
 # 15 mars 2023
 ######################################################
 #setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
-#setwd("C:/Users/Hugo/Documents/methode/Bio500")
+setwd("C:/Users/Hugo/Documents/methode/Bio500")
 #setwd("C:/Users/foduf/Desktop/methode/Bio500")
 ######################################################
 ## Etapes (*À ADAPTER*)
@@ -329,7 +329,7 @@ rm(collabofinal)
 
 #CRÉER LA BASE DE DONNÉES
 
-con <- dbConnect(SQLite(), dbname="reseau509.db")
+con <- dbConnect(SQLite(), dbname="reseau511.db")
 
 tbl_etudiant <-"
 CREATE TABLE etudiant (
@@ -382,25 +382,27 @@ dbListTables(con)
 
 dbWriteTable(con, append = TRUE, name = "etudiant", value = etudiant, row.names = FALSE, na.rm = TRUE)
 dbWriteTable(con, append = TRUE, name = "cours", value = cours, row.names = FALSE)
-dbWriteTable(con, append = TRUE, name = "collabo", value =  collabofinal, row.names = FALSE)
+dbWriteTable(con, append = TRUE, name = "collabo", value =  collabo, row.names = FALSE)
 
 #REQUÊTES
 #nombre de liens par étudiants
 
 sql_requete <- "
-SELECT DISTINCT etudiant1
+SELECT DISTINCT etudiant1,
  COUNT(etudiant1) AS liens_etudiant
- FROM collabo
-;"
+ FROM collabo;"
+
 
 liens <-dbGetQuery(con, sql_requete)
 head(liens)
 
 #Décompte de liens par paire d'étudiants
 sql_requete <- "
-SELECT DISTINCT etudiant1, etudiant2
- COUNT(etudiant 1, etudiant2) AS liens_paire
- FROM collabo;"
+SELECT DISTINCT etudiant1, etudiant2,
+ COUNT(*) AS liens_paire
+ FROM collabo
+ GROUP BY etudiant1, etudiant2
+ ;"
 
 liens_paires <-dbGetQuery(con, sql_requete)
 head(liens_paires)
