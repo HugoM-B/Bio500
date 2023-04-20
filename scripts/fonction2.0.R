@@ -328,7 +328,7 @@ list2<-nettoyage_function(list)
   #CRÉER LA BASE DE DONNÉES
 create_data.base_func<-function(x){
   
-  con <- dbConnect(SQLite(), dbname="reseau500.db")
+  con <- dbConnect(SQLite(), dbname="reseau501.db")
   
   etudiant<-x[[1]]
   cours<-x[[2]]
