@@ -28,6 +28,10 @@ list(
    name = con,  #retourner con pour les requêtes à venir
    command = create_data.base_func(list_table_apres_nettoyage)
  ),
+ tar_target(
+   name = list_requete,  #retourner con pour les requêtes à venir
+   command = requete_function(con)
+ ),
  tar_render(
    name = rapport, # Cible du rapport
    path = "rapport/rapport.Rmd" # Le path du rapport à renderiser

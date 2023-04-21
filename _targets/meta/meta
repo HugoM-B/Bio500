@@ -1,14 +1,16 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-con|stem|785a1bf8a4233c59|34924fcf25092328|bd5e30c131f71e32|-1614524628||t19467.5113826724s|032c598c5079204f|286|rds|local|vector|||0.48|Closing open result set, pending rows. Closing open result set, pending rows. Closing open result set, pending rows|
-create_data.base_func|function|f96816a96935aa6f|||||||||||||||
+con|stem|ada61fe5c4f1ea75|34924fcf25092328|3cb0dcd975bc3e7b|-1614524628||t19468.5422073582s|21cb808e5a67bfdb|302|rds|local|vector|||0.15|Closing open result set, pending rows. Closing open result set, pending rows. Closing open result set, pending rows|
+create_data.base_func|function|53fa0d205e0b7ac0|||||||||||||||
 directory|object|92c8ddc1187e78de|||||||||||||||
-file_paths|stem|c797a4e6b4bc125f|71948d4e0817f43c|3fa26787f7d1831b|1115504559||t19467.5092504881s|6c088a07ec7dbe69|213|rds|local|vector|||0||
-import_function|function|17eaee72d677ec58|||||||||||||||
+file_paths|stem|64a9162524939925|71948d4e0817f43c|3fa26787f7d1831b|1115504559||t19468.5421974766s|6c088a07ec7dbe69|213|rds|local|vector|||0.01||
+import_function|function|3087a578fc421d87|||||||||||||||
 list|object|0c20b7e70ab4da69|||||||||||||||
-list_table_apres_nettoyage|stem|db81b4e05d3bdd07|d9ff7c6d5f7d28bf|2d1e20d6697320ce|-573066442||t19467.5092653442s|8d83b6fbb369e833|25119|rds|local|vector|||1.05||
-list_table_avant_nettoyage|stem|65a71b6da98f1aaf|76fe825d5e6c3163|863bbe44244f98b2|-1573553367||t19467.509252433s|731b472be796a6b7|24214|rds|local|vector|||0.09||
+list_requete|stem|d9798c1cf484499e|2dfdaad6c573f58e|51c23ef06a79bfce|-688661065||t19468.5422079122s|38e104a274894f86|9377|rds|local|vector|||0.05||
+list_table_apres_nettoyage|stem|fe979c7b829b0cdb|d9ff7c6d5f7d28bf|6735b56b91462e53|-573066442||t19468.5422052172s|8d83b6fbb369e833|25119|rds|local|vector|||0.57||
+list_table_avant_nettoyage|stem|1638ce59564b6761|76fe825d5e6c3163|459ee880675e3257|-1573553367||t19468.5421984006s|731b472be796a6b7|24214|rds|local|vector|||0.06||
 list2|object|c51440c097fd008c|||||||||||||||
 nettoyage_function|function|5bbe0aa188ed9caf|||||||||||||||
-path|stem|7f2b17405d412ffd|10dcbbfae736baf7|ef46db3751d8e999|-1383433547|donnees_BIO500/raw|t19466.8629021321s|c7827d29f759aa2c|8192|file|local|vector|||0.25|le package RSQLite a été compilé avec la version R 4.2.3|
-rapport|stem|82a64a76d264aecd|9b10d1efde4e6761|33a416f8d6218e19|-316371949|rapport/rapport.html*rapport/rapport.Rmd|t19466.8629022819s|2a206356ac94495d|638872|file|local|vector|||1.16|le package RSQLite a été compilé avec la version R 4.2.3|
+path|stem|7f2b17405d412ffd|10dcbbfae736baf7|ef46db3751d8e999|-1383433547|donnees_BIO500/raw|t19468.5120466494s|c7827d29f759aa2c|8192|file|local|vector|||0.25|le package RSQLite a été compilé avec la version R 4.2.3|
+rapport|stem|6b346f52888a1e70|9b10d1efde4e6761|4745aa592080ea1d|-316371949|rapport/rapport.html*rapport/rapport.Rmd|t19468.5448893531s|1652c86664880dfe|638889|file|local|vector|||1.47|le package stringr a été compilé avec la version R 4.2.3. le package RSQLite a été compilé avec la version R 4.2.3|
+requete_function|function|20ef0ae6e5f81ab1|||||||||||||||
 table_names|object|34994013e0c0536c|||||||||||||||
