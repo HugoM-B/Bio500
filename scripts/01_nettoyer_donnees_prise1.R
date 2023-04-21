@@ -4,7 +4,7 @@
 # 15 mars 2023
 ######################################################
 #setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
-setwd("C:/Users/Hugo/Documents/methode/Bio500")
+#setwd("C:/Users/Hugo/Documents/methode/Bio500")
 #setwd("C:/Users/foduf/Desktop/methode/Bio500")
 ######################################################
 ## Etapes (*À ADAPTER*)
@@ -389,8 +389,10 @@ dbWriteTable(con, append = TRUE, name = "collabo", value =  collabo, row.names =
 
 sql_requete <- "
 SELECT DISTINCT etudiant1,
- COUNT(etudiant1) AS liens_etudiant
- FROM collabo;"
+COUNT(etudiant1) AS liens_etudiant
+FROM collabo
+GROUP BY etudiant1
+;"
 
 
 liens <-dbGetQuery(con, sql_requete)
@@ -402,10 +404,32 @@ SELECT DISTINCT etudiant1, etudiant2,
  COUNT(*) AS liens_paire
  FROM collabo
  GROUP BY etudiant1, etudiant2
+ ORDER BY liens_paire DESC
  ;"
 
 liens_paires <-dbGetQuery(con, sql_requete)
 head(liens_paires)
+
+sql_requete <- "
+SELECT DISTINCT etudiant1, etudiant2, COUNT(*) AS liens_paire
+ FROM collabo
+WHERE etudiant1 IN (
+  SELECT DISTINCT etudiant1
+  FROM collabo
+  WHERE sigle = 'BIO500'
+  
+)
+AND etudiant2 IN (
+  SELECT DISTINCT etudiant2
+  FROM collabo
+  WHERE sigle = 'BIO500'
+  
+)
+GROUP BY etudiant1, etudiant2
+;"
+
+liens_paires_bio500 <-dbGetQuery(con, sql_requete)
+head(liens_paires_bio500)
 
 #Requete pour savoir les Collaborations entre étudiants de la même chohorte
 sql_requete <-
@@ -478,9 +502,48 @@ head(pm_ra_collabo)
 
 #Graphique de centralité
 
-plot(g, vertex.label=NA, edge.arrow.mode = 0,
+install.packages('igraph')
+library(igraph)
+
+# get names for row and columns
+nameVals <- sort(unique(unlist(liens_paires_bio500[1:2])))
+# construct 0 matrix of correct dimensions with row and column names
+myMat <- matrix(0, length(nameVals), length(nameVals), dimnames = list(nameVals, nameVals))
+
+# fill in the matrix with matrix indexing on row and column names
+myMat[as.matrix(liens_paires_bio500[c("etudiant1", "etudiant2")])] <- liens_paires_bio500[["liens_paire"]]
+
+#faire le graphique
+#cree un objet graphique
+graph<-graph.adjacency(myMat)
+
+# Calculer le degré
+deg <- apply(myMat, 2, sum) + apply(myMat, 1, sum)
+
+# Le rang pour chaque noeud
+rk <- rank(deg)
+
+# Faire un code de couleur
+col.vec <- heat.colors(S)
+
+#attribuer les couleurs aux noeuds
+V(graph)$color = col.vec[rk]
+
+#attribuer des tailles
+col.vec <- seq(length.out = S)
+
+#couleure selon la taille
+V(graph)$size = col.vec[rk]
+
+#mettre les noms
+V(graph)$etudiant1<-[,1]
+
+
+#faire la figure
+plot(graph, vertex.label=NA, edge.arrow.mode = 0,
      vertex.frame.color = NA,
-     layout = layout.circle(g))
+     layout = layout.kamada.kawai(graph))
+
 
 #-----------------------------------------------------
 
