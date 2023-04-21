@@ -536,7 +536,7 @@ col.vec <- seq(length.out = S)
 V(graph)$size = col.vec[rk]
 
 #mettre les noms
-V(graph)$etudiant1<-
+V(graph)$etudiant1<-liens_paires_bio500[,1]
 
 
 #faire la figure
