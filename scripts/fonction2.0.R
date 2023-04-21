@@ -7,10 +7,8 @@
 #setwd("C:/Users/Hugo/Documents/methode/Bio500")
 #setwd("C:/Users/foduf/Desktop/methode/Bio500")
 
-directory<-"donnees_BIO500/raw"
-table_names<-list.files(directory, full.names = TRUE)
-
-
+#directory<-"donnees_BIO500/raw"
+#table_names<-list.files(directory, full.names = TRUE)
 import_function<-function(directory,table_names){
   allFiles <- dir(directory)
   
@@ -68,7 +66,7 @@ import_function<-function(directory,table_names){
   return(list_table)
 }
 #-----------------------------------------------------
-list<-import_function(directory = directory,table_names = table_names)
+#list<-import_function(directory = directory,table_names = table_names)
 # 2.
 
 nettoyage_function<-function(x){
@@ -323,12 +321,12 @@ nettoyage_function<-function(x){
   return(list)
 } 
 
-list2<-nettoyage_function(list)
+#list2<-nettoyage_function(list)
 
   #CRÉER LA BASE DE DONNÉES
 create_data.base_func<-function(x){
   
-  con <- dbConnect(SQLite(), dbname="reseau501.db")
+  con <- dbConnect(SQLite(), dbname="reseau552.db")
   
   etudiant<-x[[1]]
   cours<-x[[2]]
@@ -389,37 +387,105 @@ CREATE TABLE collabo (
   
   return(con)
 }
-getwd()
 
-install.packages("RSQLite")
-library(RSQLite)
+#con<-create_data.base_func(list2)
+
+#REQUÊTES
+#nombre de liens par étudiants
 
 
-  #REQUÊTES
-  #nombre de liens par étudiants
+requete_function<-function(con){
   
- # sql_requete <- "
-#SELECT etudiant1, etudiant2, count(DISTINCT auteur2) AS nb_collab ,
-#FORM collabo
-#GROUP BY sigle
-#  ;"
-#con<-dbConnect(SQLite(),dbname="/Users/roros/OneDrive/Documents/méthodologie computationelle/BIO500 Équipe.db")
-#liens <-  dbGetQuery(con, sql_requete)
-#head(liens)
-  
-#esq l'année de début du bac influence la collaboration en étudiants
-#sortir les collaboration ou les étudiants dans la même année collabore puis sortir les collaborations ou les étudiants ne sont pas 
-#dans la même année puis faire un prorata 
+sql_requete <- "
+SELECT DISTINCT etudiant1,
+ COUNT(etudiant1) AS liens_etudiant
+ FROM collabo;"
 
- # sql_requete <- "
-#SELECT etudiant1, etudiant2
-#FROM collabo
-#JOIN etudiant ON collabo.primaryKey = etudiant.foreing.Key
-# WHERE annee_debut$etudiant2 = annee_debut$etudiant2
- # ;"
-  
-#collabo_meme_annee <- dbGetQuery(con, sql_requete)
-#head(collabo_meme_annee)
 
-  
+liens <-dbGetQuery(con, sql_requete)
+head(liens)
+
+#Décompte de liens par paire d'étudiants
+sql_requete <- "
+SELECT DISTINCT etudiant1, etudiant2,
+ COUNT(*) AS liens_paire
+ FROM collabo
+ GROUP BY etudiant1, etudiant2
+ ;"
+
+liens_paires <-dbGetQuery(con, sql_requete)
+head(liens_paires)
+
+#Requete pour savoir les Collaborations entre étudiants de la même chohorte
+sql_requete <-
+  "SELECT c.etudiant1, c.etudiant2,
+COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
+FROM collabo c 
+JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
+JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
+WHERE 
+e1.annee_debut = e2.annee_debut
+GROUP BY 
+c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
+ORDER BY 
+nb_collaborations DESC
+;"
+mm_ad_collabo  <-dbGetQuery(con, sql_requete)
+head(mm_ad_collabo)
+
+#requete pour savoir le nombre de collabo etre élèves PAS de la mm cohorte
+
+sql_requete <-
+  "SELECT c.etudiant1, c.etudiant2,
+COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
+FROM collabo c 
+JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
+JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
+WHERE 
+e1.annee_debut <> e2.annee_debut
+GROUP BY 
+c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
+ORDER BY 
+nb_collaborations DESC
+;"
+pm_ad_collabo  <-dbGetQuery(con, sql_requete)
+head(pm_ad_collabo)
+
+#Requête pour la région administrative des élèves
+#même région
+sql_requete <- "
+SELECT etudiant1, etudiant2,
+COUNT(*) AS nb_collaborations, e1.region_administrative, e2.region_administrative
+FROM collabo
+JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
+JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
+WHERE
+e1.region_administrative = e2.region_administrative
+GROUP BY 
+etudiant1, etudiant2, e1.region_administrative, e2.region_administrative
+;"
+
+mm_ra_collabo  <-dbGetQuery(con, sql_requete)
+head(mm_ra_collabo)
+
+#pas la même région
+
+sql_requete <- "
+SELECT etudiant1, etudiant2,
+COUNT(*) AS nb_collaborations, e1.region_administrative, e2.region_administrative
+FROM collabo
+JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
+JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
+WHERE
+e1.region_administrative <> e2.region_administrative
+GROUP BY 
+etudiant1, etudiant2, e1.region_administrative, e2.region_administrative
+;"
+
+pm_ra_collabo  <-dbGetQuery(con, sql_requete)
+head(pm_ra_collabo)
+requete_output<-list(liens,liens_paires,pm_ad_collabo,mm_ra_collabo,pm_ra_collabo)
+return(requete_output)
+} 
+#joe<-requete_function(con)
   #-----------------------------------------------------
