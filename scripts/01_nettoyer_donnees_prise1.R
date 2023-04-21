@@ -539,3 +539,11 @@ V(graph)$size = col.vec[rk]
 plot(graph, edge.arrow.mode = 0,
      vertex.frame.color = myMat,
      layout = layout_with_kk(graph))
+#c'est quoi les communautés dans le graph
+wtc = walktrap.community(graph)
+#on calcule la modularité à partir de ces communautés
+modularity(wtc)
+#calcul de distance entre les noeuds
+distances(graph)
+#centralité des noeuds = son importance proportionelle d'un noeud dans le graph
+eigen_centrality(graph)$vector
