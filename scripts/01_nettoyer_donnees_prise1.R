@@ -524,20 +524,20 @@ deg <- apply(myMat, 2, sum) + apply(myMat, 1, sum)
 rk <- rank(deg)
 
 # Faire un code de couleur
-col.vec <-heat.colors(myMat)
+col.vec <-heat.colors(38)
 
 #attribuer les couleurs aux noeuds
 V(graph)$color = col.vec[rk]
 
 #attribuer des tailles
-col.vec <- seq(length.out = S)
+col.vec <- seq(length.out = 38)
 
 #couleure selon la taille
 V(graph)$size = col.vec[rk]
 
 #faire la figure de liens
 plot(graph, edge.arrow.mode = 0,
-     vertex.frame.color = myMat,
+     vertex.frame.color = NA,
      layout = layout_with_kk(graph))
 #c'est quoi les communautés dans le graph
 wtc = walktrap.community(graph)
@@ -546,4 +546,24 @@ modularity(wtc)
 #calcul de distance entre les noeuds
 distances(graph)
 #centralité des noeuds = son importance proportionelle d'un noeud dans le graph
-eigen_centrality(graph)$vector
+lol<-eigen_centrality(graph)$vector
+
+rkc <- rank(lol)
+
+# Faire un code de couleur
+col.vec <-heat.colors(38)
+
+#attribuer les couleurs aux noeuds
+V(graph)$color = col.vec[rkc]
+
+#attribuer des tailles
+col.vec <- seq(length.out = 38)
+
+#couleure selon la taille
+V(graph)$size = col.vec[rkc]
+
+#faire la figure de liens
+plot(graph, edge.arrow.mode = 0,
+     vertex.frame.color = NA,
+     layout = layout.fruchterman.reingold(graph))
+
