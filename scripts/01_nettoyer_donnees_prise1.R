@@ -7,7 +7,7 @@
 #setwd("C:/Users/Hugo/Documents/methode/Bio500")
 #setwd("C:/Users/foduf/Desktop/methode/Bio500")
 ######################################################
-## Etapes (*À ADAPTER*)
+## Etapes (À ADAPTER)
 # 1. Charger tous les donnees provenants du dossier data/raw
 # 2. Pour chaque table (etudiant, cours, collaborations):
 # 	- Vérifier si les noms de colonnes sont standardisés
@@ -37,11 +37,11 @@ nbGroupe <- length(grep(tabNames[1], allFiles))
 
 # Charger les donnees
 for(tab in tabNames) {
-  # prendre seulement les fichers de la table specifique `tab`
+  # prendre seulement les fichers de la table specifique tab
   tabFiles <- allFiles[grep(tab, allFiles)]
   
   for(groupe in 1:nbGroupe) {
-    # Definir le nom de l'obj dans lequel sauver les donnees de la table `tab` du groupe `groupe`
+    # Definir le nom de l'obj dans lequel sauver les donnees de la table tab du groupe groupe
     tabName <- paste0(tab, "_", groupe)
     
     # Avant  de charger les données, il faut savoir c'est quoi le séparateur utilisé car
@@ -50,7 +50,7 @@ for(tab in tabNames) {
     L <- readLines(ficher, n = 1) # charger première ligne du donnée
     separateur <- ifelse(grepl(';', L), ';', ',') # S'il y a un ";", separateur est donc ";"
     
-    # charger le donnée avec le bon séparateur et donner le nom `tabName`
+    # charger le donnée avec le bon séparateur et donner le nom tabName
     assign(tabName, read.csv(ficher, sep = separateur, stringsAsFactors = FALSE, na.strings=c(""," ","NA")))
     
   }
@@ -433,7 +433,7 @@ head(liens_paires_bio500)
 
 #Requete pour savoir les Collaborations entre étudiants de la même chohorte
 sql_requete <-
-"SELECT c.etudiant1, c.etudiant2,
+  "SELECT c.etudiant1, c.etudiant2,
 COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
 FROM collabo c 
 JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
@@ -543,7 +543,3 @@ V(graph)$etudiant1<-liens_paires_bio500[,1]
 plot(graph, vertex.label=NA, edge.arrow.mode = 0,
      vertex.frame.color = NA,
      layout = layout.kamada.kawai(graph))
-
-
-#-----------------------------------------------------
-
