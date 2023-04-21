@@ -517,14 +517,14 @@ myMat[as.matrix(liens_paires_bio500[c("etudiant1", "etudiant2")])] <- liens_pair
 #cree un objet graphique
 graph<-graph.adjacency(myMat)
 
-# Calculer le degré
+# Calculer le degré de chaque
 deg <- apply(myMat, 2, sum) + apply(myMat, 1, sum)
 
 # Le rang pour chaque noeud
 rk <- rank(deg)
 
 # Faire un code de couleur
-col.vec <- heat.colors(S)
+col.vec <-heat.colors(myMat)
 
 #attribuer les couleurs aux noeuds
 V(graph)$color = col.vec[rk]
@@ -535,11 +535,7 @@ col.vec <- seq(length.out = S)
 #couleure selon la taille
 V(graph)$size = col.vec[rk]
 
-#mettre les noms
-V(graph)$etudiant1<-liens_paires_bio500[,1]
-
-
-#faire la figure
-plot(graph, vertex.label=NA, edge.arrow.mode = 0,
-     vertex.frame.color = NA,
-     layout = layout.kamada.kawai(graph))
+#faire la figure de liens
+plot(graph, edge.arrow.mode = 0,
+     vertex.frame.color = myMat,
+     layout = layout_with_kk(graph))
