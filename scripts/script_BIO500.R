@@ -4,7 +4,7 @@
 # 15 mars 2023
 ######################################################
 #setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
-setwd("C:/Users/Hugo/Documents/methode/Bio500")
+#setwd("C:/Users/Hugo/Documents/methode/Bio500")
 #setwd("C:/Users/foduf/Desktop/methode/Bio500")
 ######################################################
 ## Etapes (À ADAPTER)
@@ -459,7 +459,7 @@ ggplot(nb_collabo_by_year, aes(x = annee_debut, y = moyenne_collab, fill = annee
        y = "Nombre moyen d'étudiants") +
   xlab("Session d'entrée à l'université") +
   scale_x_discrete(limits = ordre_annees) +
-  theme_classic()
+  theme_classic() + theme(plot.title = element_text(size = 6))
 
 sql_requete3 <- "
 SELECT DISTINCT etudiant1, etudiant2, COUNT(*) AS liens_paire
