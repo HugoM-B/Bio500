@@ -4,7 +4,7 @@
 # 15 mars 2023
 ######################################################
 #setwd('C:/Users/foduf/OneDrive/Bureau/méthode')
-#setwd("C:/Users/Hugo/Documents/methode/Bio500")
+setwd("C:/Users/Hugo/Documents/methode/Bio500")
 #setwd("C:/Users/foduf/Desktop/methode/Bio500")
 ######################################################
 ## Etapes (À ADAPTER)
@@ -448,37 +448,13 @@ couleurs_pastel <- c("#FFE4E1", "#FA8072", "#90EE90", "#87CEFA", "#FFDAB9", "#AD
 
 ggplot(nb_collabo_by_year, aes(x = annee_debut, y = moyenne_collab, fill = annee_debut)) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = palette_pastel) +
+  scale_fill_manual(values = couleurs_pastel) +
   labs(title = "Nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré, par session d'entrée à l'université",
        y = "Nombre moyen d'étudiants") +
   xlab("Session d'entrée à l'université") +
   scale_x_discrete(limits = ordre_annees) +
   theme_classic()
 
-
-
-sql_requete <- "
-SELECT DISTINCT etudiant1,
-COUNT(etudiant1) AS liens_etudiant
-FROM collabo
-GROUP BY etudiant1
-;"
-
-
-#liens <-dbGetQuery(con, sql_requete)
-head(liens)
-
-#Décompte de liens par paire d'étudiants
-sql_requete <- "
-SELECT DISTINCT etudiant1, etudiant2,
- COUNT(*) AS liens_paire
- FROM collabo
- GROUP BY etudiant1, etudiant2
- ORDER BY liens_paire DESC
- ;"
-
-liens_paires <-dbGetQuery(con, sql_requete)
-head(liens_paires)
 
 sql_requete <- "
 SELECT DISTINCT etudiant1, etudiant2, COUNT(*) AS liens_paire
@@ -500,7 +476,7 @@ GROUP BY etudiant1, etudiant2
 
 liens_paires_bio500 <-dbGetQuery(con, sql_requete)
 head(liens_paires_bio500)
-#### utiliser!
+#
 sql_requete <- "
  SELECT COUNT(*) AS nb_collaborations, e1.region_administrative AS region1, e2.region_administrative AS region2
 FROM collabo c 
@@ -524,75 +500,6 @@ AND etudiant2 IN (
 
 collab_pair_region <-dbGetQuery(con, sql_requete)
 head(collab_pair_region)
-
-#Requete pour savoir les Collaborations entre étudiants de la même chohorte
-sql_requete <-
-  "SELECT c.etudiant1, c.etudiant2,
-COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
-FROM collabo c 
-JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
-JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
-WHERE 
-e1.annee_debut = e2.annee_debut
-GROUP BY 
-c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
-ORDER BY 
-nb_collaborations DESC
-;"
-#mm_ad_collabo  <-dbGetQuery(con, sql_requete)
-head(mm_ad_collabo)
-
-#requete pour savoir le nombre de collabo etre élèves PAS de la mm cohorte
-
-sql_requete <-
-  "SELECT c.etudiant1, c.etudiant2,
-COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
-FROM collabo c 
-JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
-JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
-WHERE 
-e1.annee_debut <> e2.annee_debut
-GROUP BY 
-c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
-ORDER BY 
-nb_collaborations DESC
-;"
-#pm_ad_collabo  <-dbGetQuery(con, sql_requete)
-head(pm_ad_collabo)
-
-#Requête pour la région administrative des élèves
-#même région
-sql_requete <- "
-SELECT etudiant1, etudiant2,
-COUNT(*) AS nb_collaborations, e1.region_administrative, e2.region_administrative
-FROM collabo
-JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
-JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
-WHERE
-e1.region_administrative = e2.region_administrative
-GROUP BY 
-etudiant1, etudiant2, e1.region_administrative, e2.region_administrative
-;"
-
-#mm_ra_collabo  <-dbGetQuery(con, sql_requete)
-head(mm_ra_collabo)
-
-#pas la même région
-
-sql_requete <- "
-SELECT etudiant1, etudiant2,
-COUNT(*) AS nb_collaborations, e1.region_administrative, e2.region_administrative
-FROM collabo
-JOIN etudiant e1 ON etudiant1 = e1.prenom_nom
-JOIN etudiant e2 ON etudiant2 = e2.prenom_nom
-WHERE
-e1.region_administrative <> e2.region_administrative
-GROUP BY 
-etudiant1, etudiant2, e1.region_administrative, e2.region_administrative
-;"
-
-#pm_ra_collabo  <-dbGetQuery(con, sql_requete)
-head(pm_ra_collabo)
 
 #Graphique de centralité
 
@@ -631,7 +538,7 @@ V(graph)$size = col.vec[rk]
 V(graph)$edge=col.vec[rk]
 #####
 # Ajustement de la largeur des liens en fonction du nombre de liens entre les étudiants
-edge.width <-rescale(liens_paires_bio500$liens_paire, to= c(1,5))
+#edge.width <-rescale(liens_paires_bio500$liens_paire, to= c(1,5))
 
 
 
@@ -679,10 +586,8 @@ plot(graph, edge.arrow.mode = 0,
      vertex.frame.color = NA,
      layout = layout.fruchterman.reingold(graph))
 
-
-------------------------------------------------------------------------
-  #Créer la liste des regions administratives et inclure l'ensemble des valeurs de distance regionnale dans une matrice (voir methodologie pour l'origine des valeurs)
-  liste<-unique(etudiant$region_administrative)
+ #Créer la liste des regions administratives et inclure l'ensemble des valeurs de distance regionnale dans une matrice (voir methodologie pour l'origine des valeurs)
+liste<-unique(etudiant$region_administrative)
 connect<-c(1,2,2,4,3,3,4,3,3,4,3,3,4,2,4,0,3,2,1,2,3,2,2,4,2,3,4,3,3,3,2,4,0,3,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,3,3,1,2,3,3,2,3,3,4,3,3,3,4,0,3,3,2,2,2,1,2,2,2,3,4,3,2,2,2,3,0,3,3,2,2,3,2,1,3,3,4,5,2,2,3,2,2,0,4,4,4,3,3,2,3,1,3,4,5,3,2,2,3,3,0,4,3,2,3,2,2,3,3,1,2,3,4,3,3,3,4,0,2,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1,4,4,5,3,4,5,5,3,2,1,6,5,5,5,6,0,2,3,3,2,4,3,2,3,4,5,6,1,2,4,2,2,0,5,3,3,2,3,2,2,2,3,4,5,2,1,3,2,2,0,4,4,3,3,3,2,3,2,3,4,5,4,3,1,3,4,0,4,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,4,3,4,3,2,3,4,5,6,2,2,4,3,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1)
 myMatregion <- matrix(connect, length(liste), length(liste), dimnames = list(liste, liste))
 
@@ -735,20 +640,3 @@ mp <- barplot2(Donnee_vis[,2], beside = TRUE,
                cex.names = 1.5, plot.ci = TRUE, ci.l = ecart_inf, ci.u = ecart_sup,
                plot.grid = TRUE)
 
-     #requete date d'entré à l'uni pour chaque collaboration
-     #Requete pour savoir les Collaborations entre étudiants de la même chohorte
-     sql_requete <-
-       "SELECT c.etudiant1, c.etudiant2,
-COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
-FROM collabo c 
-JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
-JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
-WHERE 
-e1.annee_debut = e2.annee_debut
-GROUP BY 
-c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
-ORDER BY 
-nb_collaborations DESC
-;"
-     mm_ad_collabo  <-dbGetQuery(con, sql_requete);
-     head(mm_ad_collabo)
