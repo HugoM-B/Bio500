@@ -465,7 +465,7 @@ GROUP BY etudiant1
 ;"
 
 
-liens <-dbGetQuery(con, sql_requete)
+#liens <-dbGetQuery(con, sql_requete)
 head(liens)
 
 #Décompte de liens par paire d'étudiants
@@ -500,6 +500,30 @@ GROUP BY etudiant1, etudiant2
 
 liens_paires_bio500 <-dbGetQuery(con, sql_requete)
 head(liens_paires_bio500)
+#### utiliser!
+sql_requete <- "
+ SELECT COUNT(*) AS nb_collaborations, e1.region_administrative AS region1, e2.region_administrative AS region2
+FROM collabo c 
+JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
+JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
+WHERE etudiant1 IN (
+  SELECT DISTINCT etudiant1
+  FROM collabo
+  WHERE sigle = 'BIO500'
+  
+)
+AND etudiant2 IN (
+  SELECT DISTINCT etudiant2
+  FROM collabo
+  WHERE sigle = 'BIO500'
+  
+)
+ GROUP BY e1.region_administrative, e2.region_administrative
+ ORDER BY nb_collaborations DESC
+ ;"
+
+collab_pair_region <-dbGetQuery(con, sql_requete)
+head(collab_pair_region)
 
 #Requete pour savoir les Collaborations entre étudiants de la même chohorte
 sql_requete <-
@@ -515,7 +539,7 @@ c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
 ORDER BY 
 nb_collaborations DESC
 ;"
-mm_ad_collabo  <-dbGetQuery(con, sql_requete)
+#mm_ad_collabo  <-dbGetQuery(con, sql_requete)
 head(mm_ad_collabo)
 
 #requete pour savoir le nombre de collabo etre élèves PAS de la mm cohorte
@@ -533,7 +557,7 @@ c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
 ORDER BY 
 nb_collaborations DESC
 ;"
-pm_ad_collabo  <-dbGetQuery(con, sql_requete)
+#pm_ad_collabo  <-dbGetQuery(con, sql_requete)
 head(pm_ad_collabo)
 
 #Requête pour la région administrative des élèves
@@ -550,7 +574,7 @@ GROUP BY
 etudiant1, etudiant2, e1.region_administrative, e2.region_administrative
 ;"
 
-mm_ra_collabo  <-dbGetQuery(con, sql_requete)
+#mm_ra_collabo  <-dbGetQuery(con, sql_requete)
 head(mm_ra_collabo)
 
 #pas la même région
@@ -567,7 +591,7 @@ GROUP BY
 etudiant1, etudiant2, e1.region_administrative, e2.region_administrative
 ;"
 
-pm_ra_collabo  <-dbGetQuery(con, sql_requete)
+#pm_ra_collabo  <-dbGetQuery(con, sql_requete)
 head(pm_ra_collabo)
 
 #Graphique de centralité
@@ -585,70 +609,50 @@ myMat[as.matrix(liens_paires_bio500[c("etudiant1", "etudiant2")])] <- liens_pair
 
 #faire le graphique
 #cree un objet graphique
-graph<-graph.adjacency(myMat)
+graph<-graph.adjacency(myMat, weighted = NULL, diag = TRUE)
 
-# Calculer le degré
+# Calculer le degré de chaque
 deg <- apply(myMat, 2, sum) + apply(myMat, 1, sum)
 
 # Le rang pour chaque noeud
 rk <- rank(deg)
 
 # Faire un code de couleur
-col.vec <- heat.colors(S)
-#col.vec <-heat.colors(38)
+col.vec <-heat.colors(38)
 
 #attribuer les couleurs aux noeuds
 V(graph)$color = col.vec[rk]
 
 #attribuer des tailles
-col.vec <- seq(length.out = S)
-#col.vec <- seq(length.out = 38)
+col.vec <- seq(5,10,length.out = 38)
 
 #couleure selon la taille
 V(graph)$size = col.vec[rk]
+V(graph)$edge=col.vec[rk]
+#####
+# Ajustement de la largeur des liens en fonction du nombre de liens entre les étudiants
+edge.width <-rescale(liens_paires_bio500$liens_paire, to= c(1,5))
 
+
+
+#####
 #faire la figure de liens
-plot(graph, edge.arrow.mode = 0,
-     vertex.frame.color = NA,
-     #mettre les noms
-     V(graph)$etudiant1<-liens_paires_bio500[,1],
-     #faire la figure
-     plot(graph, vertex.label=NA, edge.arrow.mode = 0,
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          layout = layout.kamada.kawai(graph))
-     
-     
-     #requete date d'entré à l'uni pour chaque collaboration
-     #Requete pour savoir les Collaborations entre étudiants de la même chohorte
-     sql_requete <-
-       "SELECT c.etudiant1, c.etudiant2,
-COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
-FROM collabo c 
-JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
-JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
-WHERE 
-e1.annee_debut = e2.annee_debut
-GROUP BY 
-c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
-ORDER BY 
-nb_collaborations DESC
-;"
-     mm_ad_collabo  <-dbGetQuery(con, sql_requete);
-     head(mm_ad_collabo)
-     layout = layout_with_kk(graph))
+plot(graph, edge.arrow.mode = 0, edge.curved = 0,
+     vertex.frame.color = "black",
+     layout =  layout_with_kk(graph))
 #c'est quoi les communautés dans le graph
 wtc = walktrap.community(graph)
+
+#wtc<-walktrap.community(graph, weights = E(graph)$weight, steps = 4, merges =
+#TRUE, modularity = FALSE, labels = TRUE)
+plot(wtc, graph, edge.arrow.mode = 0,vertex.label=NA,
+     vertex.frame.color = "black",
+     layout = layout_with_kk(graph))
+legend(x=1, y=1, c("Newspaper","Television", "Online News"), pch=21,
+       col="#777777", pt.bg=V(graph)$color, pt.cex=2, cex=.8, bty="n", ncol=1)
+
+
+
 #on calcule la modularité à partir de ces communautés
 modularity(wtc)
 #calcul de distance entre les noeuds
@@ -674,5 +678,77 @@ V(graph)$size = col.vec[rkc]
 plot(graph, edge.arrow.mode = 0,
      vertex.frame.color = NA,
      layout = layout.fruchterman.reingold(graph))
->>>>>>> bec3b6e12e29e8022b5f0324846cba3ff91449b8
 
+
+------------------------------------------------------------------------
+  #Créer la liste des regions administratives et inclure l'ensemble des valeurs de distance regionnale dans une matrice (voir methodologie pour l'origine des valeurs)
+  liste<-unique(etudiant$region_administrative)
+connect<-c(1,2,2,4,3,3,4,3,3,4,3,3,4,2,4,0,3,2,1,2,3,2,2,4,2,3,4,3,3,3,2,4,0,3,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,3,3,1,2,3,3,2,3,3,4,3,3,3,4,0,3,3,2,2,2,1,2,2,2,3,4,3,2,2,2,3,0,3,3,2,2,3,2,1,3,3,4,5,2,2,3,2,2,0,4,4,4,3,3,2,3,1,3,4,5,3,2,2,3,3,0,4,3,2,3,2,2,3,3,1,2,3,4,3,3,3,4,0,2,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1,4,4,5,3,4,5,5,3,2,1,6,5,5,5,6,0,2,3,3,2,4,3,2,3,4,5,6,1,2,4,2,2,0,5,3,3,2,3,2,2,2,3,4,5,2,1,3,2,2,0,4,4,3,3,3,2,3,2,3,4,5,4,3,1,3,4,0,4,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,4,3,4,3,2,3,4,5,6,2,2,4,3,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1)
+myMatregion <- matrix(connect, length(liste), length(liste), dimnames = list(liste, liste))
+
+#Calcule de la somme de collaborations par region
+collabpar_region<-collab_pair_region[,c(1:2)]
+nomreg<-unique(collabpar_region$region1)
+totalcollab_par_reg<-matrix(ncol = 2,nrow = length(nomreg))
+colnames(totalcollab_par_reg)<-c("region1","nb_collabo")
+q<-1
+for (t in 1:length(nomreg)) {
+  collab_t<-subset(collabpar_region,collabpar_region$region1==nomreg[t])
+  totalcollab_par_reg[q,1]<-nomreg[t]
+  totalcollab_par_reg[q,2]<-sum(collab_t$nb_collaborations)
+  q<-q+1
+}
+#Ajout du nombre de collaboration par region au tableau présentant les collaboration entr pair de region selon la region 1
+indices <- which(myMatregion != 0, arr.ind = TRUE)
+tableau_distances <- data.frame(region1 = rownames(myMatregion)[indices[, 1]], region2 = colnames(myMatregion)[indices[, 2]], distance = myMatregion[indices])
+tableau_final <- merge(collab_pair_region, tableau_distances, by = c("region1", "region2"))
+# Fusionner les valeurs propres avec le tableau final
+tableau_final <- merge(tableau_final, totalcollab_par_reg, by = "region1")
+
+#Ajout d'une colonne de collaboration pondéré selon la region
+as.data.frame(tableau_final)
+tableau_final[,3]<-as.numeric(tableau_final[,3])
+tableau_final[,5]<-as.numeric(tableau_final[,5])
+tableau_final$proportion<-tableau_final[,3]/tableau_final[,5]
+#Moyenne et écart-type sur cette collaboration pondéré
+Donnee_vis<-matrix(nrow = 5, ncol = 3)
+colnames(Donnee_vis)<-c("distance","moyenne","sd")
+e<-c(1,2,3,4,5)
+q<-1
+Donnee_vis[,1]<-e
+for (p in 1:5) {
+  distance<-subset(tableau_final, tableau_final$distance==e[p])
+  Donnee_vis[q,2]<-mean(distance$proportion)
+  Donnee_vis[q,3]<-sd(distance$proportion)
+  q<-q+1
+}
+install.packages("gplots")
+library(gplots)
+ecart_sup<-Donnee_vis[,2]+Donnee_vis[,3]
+ecart_inf<-Donnee_vis[,2]-Donnee_vis[,3]
+mp <- barplot2(Donnee_vis[,2], beside = TRUE,
+               col = c("lightgreen","yellow", 
+                       "orange", "red","black"),
+               legend = Donnee_vis[,1], ylim = c(0,0.4),
+               main = "Proportion des collaborations en fonction de la distance regionnale", font.main = 4,
+               sub = "Distance en nombre de region",
+               cex.names = 1.5, plot.ci = TRUE, ci.l = ecart_inf, ci.u = ecart_sup,
+               plot.grid = TRUE)
+
+     #requete date d'entré à l'uni pour chaque collaboration
+     #Requete pour savoir les Collaborations entre étudiants de la même chohorte
+     sql_requete <-
+       "SELECT c.etudiant1, c.etudiant2,
+COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
+FROM collabo c 
+JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
+JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
+WHERE 
+e1.annee_debut = e2.annee_debut
+GROUP BY 
+c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
+ORDER BY 
+nb_collaborations DESC
+;"
+     mm_ad_collabo  <-dbGetQuery(con, sql_requete);
+     head(mm_ad_collabo)
