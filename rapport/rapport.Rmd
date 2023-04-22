@@ -45,7 +45,7 @@ ggplot(etud_anne, aes(x = annee_debut_etudiant1, y = annee_debut_etudiant2, size
   scale_x_discrete(limits = c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022", "A2022")) +
   scale_y_discrete(limits = c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022", "A2022")) +
   scale_size_manual(values = c(1, 2, 3, 4, 6, 8 ,15),
-                    labels = c("1", "]1-5]", "]5-10]", "]10-25]", "]25-75]", "]100-200]", "800+"))
+                    labels = c("1", "]1-5]", "]5-10]", "]10-25]", "]25-75]", "]100-200]", "800+")) + theme_classic() + ggtitle("Coollaboration par paire de date d'entrée") 
 
 ```
 
@@ -70,7 +70,7 @@ ggplot(nb_collabo_by_year, aes(x = annee_debut, y = moyenne_collab, fill = annee
        y = "Nombre moyen d'étudiants") +
   xlab("Session d'entrée à l'université") +
   scale_x_discrete(limits = ordre_annees) +
-  theme_classic()
+  theme_classic() + theme(plot.title = element_text(size = 8))
 ```
 ```{r,echo=FALSE}
 #lecture des données
@@ -118,17 +118,21 @@ V(graph)$edge=col.vec[rk]
 wtc = walktrap.community(graph)
 
 plot(wtc, graph, edge.arrow.mode = 0,vertex.label=NA,
-     vertex.frame.color = "black", edge.curved = 0,main = "Collaborations entre les étudiants du cours BIO500 en fonction de différents groupes de travail", font.main = 4,
+     vertex.frame.color = "black", edge.curved = 0,main = "Collaborations entre les étudiants du cours BIO500 en 
+     fonction de différents groupes de travail", font.main = 4,
      layout = layout_with_kk(graph))
-legend(x=1.1, y=1, c("groupe1","groupe2","groupe3","groupe4","groupe5","groupe6"), fill = c("lightgreen","lightyellow","orchid1","lightblue","indianred1","slateblue1"))
-legend(x=1.133, y=1, c(" ","  ","  ","  ","  ","  "),pt.bg= c("darkgreen","lightblue","darkorange2","gold","gold2","royalblue2"), pch=21,
+legend(x=1.1, y=1.1, c("groupe1","groupe2","groupe3","groupe4","groupe5","groupe6"), fill = c("lightgreen","lightyellow","orchid1","lightblue","indianred1","slateblue1"))
+legend(x=0.2, y=0, c(" ","  ","  ","  ","  ","  "),pt.bg= c("darkgreen","lightblue","darkorange2","gold","gold2","royalblue2"), pch=21,
        col="#777777", bty="n")
-legend(x=1.1, y=0.3, c("liens intergroupe","liens intragroupe"),
+legend(x=0.8, y=0.05, c("liens intergroupe","liens intragroupe"),
        col=c("red","black"),lty = 1 , cex=.8, ncol=1)
-legend(x=1.1, y=0.05, c(" faible nombre de collaborations"," nombre moyens de collaborations"," grand nombre de collaborations"),pt.bg= "white", pch=21,
+legend(x=0.4, y=-0.7, c(" faible nombre de collaborations"," nombre moyens de collaborations"," grand nombre de collaborations"),text.font= 0.5,pt.bg= "white", pch=21,
        col="#777777",pt.cex= c(1,2,3))
 
 ```
+
+
+
 
 ```{r,echo=FALSE}
 #read data

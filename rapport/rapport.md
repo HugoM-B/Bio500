@@ -56,40 +56,6 @@ consulter le dépôt de travail Github suivant
 ![](rapport_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 ![](rapport_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
-``` r
-#read data
-data<-tar_read(list_requete)
-collab_pair_region<-data[[4]]
-data1<-tar_read(list_table_apres_nettoyage)
-etudiant<-data1[[1]]
- #Créer la liste des regions administratives et inclure l'ensemble des valeurs de distance regionnale dans une matrice (voir methodologie pour l'origine des valeurs)
-liste<-unique(etudiant$region_administrative)
-connect<-c(1,2,2,4,3,3,4,3,3,4,3,3,4,2,4,0,3,2,1,2,3,2,2,4,2,3,4,3,3,3,2,4,0,3,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,3,3,1,2,3,3,2,3,3,4,3,3,3,4,0,3,3,2,2,2,1,2,2,2,3,4,3,2,2,2,3,0,3,3,2,2,3,2,1,3,3,4,5,2,2,3,2,2,0,4,4,4,3,3,2,3,1,3,4,5,3,2,2,3,3,0,4,3,2,3,2,2,3,3,1,2,3,4,3,3,3,4,0,2,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1,4,4,5,3,4,5,5,3,2,1,6,5,5,5,6,0,2,3,3,2,4,3,2,3,4,5,6,1,2,4,2,2,0,5,3,3,2,3,2,2,2,3,4,5,2,1,3,2,2,0,4,4,3,3,3,2,3,2,3,4,5,4,3,1,3,4,0,4,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,4,3,4,3,2,3,4,5,6,2,2,4,3,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1)
-myMatregion <- matrix(connect, length(liste), length(liste), dimnames = list(liste, liste))
-
-#Calcule de la somme de collaborations par region
-collabpar_region<-collab_pair_region[,c(1:2)]
-nomreg<-unique(collabpar_region$region1)
-totalcollab_par_reg<-matrix(ncol = 2,nrow = length(nomreg))
-colnames(totalcollab_par_reg)<-c("region1","nb_collabo")
-q<-1
-for (t in 1:length(nomreg)) {
-  collab_t<-subset(collabpar_region,collabpar_region$region1==nomreg[t])
-  totalcollab_par_reg[q,1]<-nomreg[t]
-  totalcollab_par_reg[q,2]<-sum(collab_t$nb_collaborations)
-  q<-q+1
-}
-#Ajout du nombre de collaboration par region au tableau présentant les collaboration entr pair de region selon la region 1
-indices <- which(myMatregion != 0, arr.ind = TRUE)
-tableau_distances <- data.frame(region1 = rownames(myMatregion)[indices[, 1]], region2 = colnames(myMatregion)[indices[, 2]], distance = myMatregion[indices])
-tableau_final <- merge(collab_pair_region, tableau_distances, by = c("region1", "region2"))
-# Fusionner les valeurs propres avec le tableau final
-tableau_final <- merge(tableau_final, totalcollab_par_reg, by = "region1")
-
-#Ajout d'une colonne de collaboration pondéré selon la region
-as.data.frame(tableau_final)
-```
-
     ##                           region1                       region2
     ## 1           abitibi_temiscamingue              centre_du_quebec
     ## 2           abitibi_temiscamingue                        estrie
@@ -343,40 +309,7 @@ as.data.frame(tableau_final)
     ## 124                 1        3         46
     ## 125                 2        4         46
 
-``` r
-tableau_final[,3]<-as.numeric(tableau_final[,3])
-tableau_final[,5]<-as.numeric(tableau_final[,5])
-tableau_final$proportion<-tableau_final[,3]/tableau_final[,5]
-#Moyenne et écart-type sur cette collaboration pondéré
-Donnee_vis<-matrix(nrow = 5, ncol = 3)
-colnames(Donnee_vis)<-c("distance","moyenne","sd")
-e<-c(1,2,3,4,5)
-q<-1
-Donnee_vis[,1]<-e
-for (p in 1:5) {
-  distance<-subset(tableau_final, tableau_final$distance==e[p])
-  Donnee_vis[q,2]<-mean(distance$proportion)
-  Donnee_vis[q,3]<-sd(distance$proportion)
-  q<-q+1
-}
-install.packages("gplots")
-```
-
     ## Warning: le package 'gplots' est en cours d'utilisation et ne sera pas installé
-
-``` r
-library(gplots)
-ecart_sup<-Donnee_vis[,2]+Donnee_vis[,3]
-ecart_inf<-Donnee_vis[,2]-Donnee_vis[,3]
-mp <- barplot2(Donnee_vis[,2], beside = TRUE,
-               col = c("lightgreen","yellow", 
-                       "orange", "red","black"),
-               legend = Donnee_vis[,1], ylim = c(0,0.4),
-               main = "Proportion des collaborations en fonction de la distance regionnale", font.main = 4,
-               sub = "Distance en nombre de region",
-               cex.names = 1.5, plot.ci = TRUE, ci.l = ecart_inf, ci.u = ecart_sup,
-               plot.grid = TRUE)
-```
 
 ![](rapport_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
