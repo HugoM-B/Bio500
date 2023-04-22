@@ -217,7 +217,7 @@ Ce graphique illustre le nombre de collaborateurs différents moyen des individu
 Figure 4: 
 Dans ce graphique, les points représentent un individu participant au cours de bio500 et la grosseur des points grosseur son nombre de collaboration. Les traits rouges et noirs représentent une collaboration avec un autre individu. On peut voir plusieurs petits sous-groupes dans la classe qui priorise les interactions entre eux mais qui peuvent aussi faire des interactions avec d’autres membres du groupe qui font partie de sous-groupe différents.  Comme plusieurs petites communautés qui forment une grande métacommuanuté [@meynard_aires_nodate].  Ce genre de système de collaboration rappel le modèle d’isolement par la distance en iles ou les individus faisant parti d’un sous-groupe priorisent la reproduction au sein du même sous-groupe à l’exception de quelques migrants. [@wright_isolation_1943]. 
 
-##conclusion
+## conclusion
 
 Pour conclure, il y a trop un gros biais via le nombre d’étudiants qui sont entrée à l’automne par rapport aux autres sessions pour en tirer une conclusion pertinente. Cependant, on observe bel et bien un lien entre les collaborateurs qui viennent des mêmes régions administratives. Les gens qui viennent de régions proches les unes des autres ont plus tendances à collaborer ensemble que les gens de régions éloignés.  
 
