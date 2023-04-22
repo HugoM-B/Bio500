@@ -24,7 +24,52 @@ Les réseaux de collaboration écologique sont complexes et comportent plusieurs
 Les données pour la réalisation de ce projet ont été acquise dans la population d’étudiant du cours Méthodes en écologie computationnelle (BIO500) à l’université de Sherbrooke (N = 38) au cours de la session d’hiver 2023. Un document Excel a été rempli par chaque étudiant pour enregistrer leurs informations personnelles, les cours qu'ils ont suivis tout au long de leur parcours, ainsi que les collaborations effectuées dans ces différents cours. Une collaboration a été défini dans ce projet comme tout événements de coopération entre deux étudiants dans le cadre de travaux scolaires. Par exemple, dans ce présent projet Béatrice a collaboré avec 3 personnes, soit Félix-Olivier, Hugo et Rosalie. Par la suite, étant donné la présence de doublon et d’erreurs de saisies, nous avons élaboré un algorithme spécifique à nos données pour le nettoyage de celles-ci.Ces données nettoyées ont ensuite été injecté dans une base de données SQL qui nous a permis de réaliser nos analyses. Le nettoyage des données et les analyses ont été effectué à l’aide du logiciel R (R Core Team, 2023). Pour obtenir plus d'informations sur le nettoyage de données, l'analyse de données ou les données en général, vous pouvez consulter le dépôt de travail Github suivant https://github.com/HugoM-B/Bio500. 
 
 ## Résultats
+```{r}
+#lecture des données
+etud_anne<-tar_read(etud_anne)
 
+# créer les classes de points
+etud_anne$collaboration <- cut(etud_anne$nb_collaborations, 
+                               breaks = c(0, 1, 5, 10, 25, 50, 100, 250, 1000), 
+                               labels = c("1", "]1-5]", "]5-10]", "]10-25]", "]25-50]", "]50-100]", "]100-250]", "800+"))
+
+
+# Créer le graphique avec ggplot2 pour les pairs d'années
+ggplot(etud_anne, aes(x = annee_debut_etudiant1, y = annee_debut_etudiant2, size = collaboration)) +
+  geom_point() +
+  labs(x = "Année d'entrée de l'étudiant 2", y = "Année d'entrée de l'étudiant 1", size = "collaboration", color = "Nombre de collaborations") +
+  scale_x_discrete(limits = c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022", "A2022")) +
+  scale_y_discrete(limits = c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022", "A2022")) +
+  scale_size_manual(values = c(1, 2, 3, 4, 6, 8 ,15),
+                    labels = c("1", "]1-5]", "]5-10]", "]10-25]", "]25-75]", "]100-200]", "800+"))
+
+```
+
+```{r}
+#lecture des données
+nb_collabo_by_year <-tar_read(nb_collabo_by_year)
+
+# Remplacer les valeurs manquantes par "Na"
+nb_collabo_by_year[1,1] <- "Na"
+
+# Définir l'ordre des session d'entré à l'uni de la variable annee_debut
+ordre_annees <- c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022", "A2022","Na")
+# création d'une palette de couleur
+couleurs_pastel <- c("#FFE4E1", "#FA8072", "#90EE90", "#87CEFA", "#FFDAB9", "#ADD8E6", "#F08080", "#98FB98", "#BA55D3")
+
+
+#création du graphique pour le nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré par session d'entrée
+
+ggplot(nb_collabo_by_year, aes(x = annee_debut, y = moyenne_collab, fill = annee_debut)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = couleurs_pastel) +
+  labs(title = "Nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré par session d'entrée",
+       y = "Nombre moyen d'étudiants") +
+  xlab("Session d'entrée à l'université") +
+  scale_x_discrete(limits = ordre_annees) +
+  theme_classic()
+
+```
 ## Discussions 
 
 ## Bibliographie 
