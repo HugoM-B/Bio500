@@ -544,20 +544,20 @@ V(graph)$edge=col.vec[rk]
 
 #####
 #faire la figure de liens
-plot(graph, edge.arrow.mode = 0, edge.curved = 0,
-     vertex.frame.color = "black",
-     layout =  layout_with_kk(graph))
+
 #c'est quoi les communautés dans le graph
 wtc = walktrap.community(graph)
 
-#wtc<-walktrap.community(graph, weights = E(graph)$weight, steps = 4, merges =
-#TRUE, modularity = FALSE, labels = TRUE)
 plot(wtc, graph, edge.arrow.mode = 0,vertex.label=NA,
-     vertex.frame.color = "black",
+     vertex.frame.color = "black", edge.curved = 0,main = "Collaborations entre les étudiants du cours BIO500 en fonction de différents groupes de travail", font.main = 4,
      layout = layout_with_kk(graph))
-legend(x=1, y=1, c("Newspaper","Television", "Online News"), pch=21,
-       col="#777777", pt.bg=V(graph)$color, pt.cex=2, cex=.8, bty="n", ncol=1)
-
+legend(x=1.1, y=1, c("groupe1","groupe2","groupe3","groupe4","groupe5","groupe6"), fill = c("lightgreen","lightyellow","orchid1","lightblue","indianred1","slateblue1"))
+legend(x=1.133, y=1, c(" ","  ","  ","  ","  ","  "),pt.bg= c("darkgreen","lightblue","darkorange2","gold","gold2","royalblue2"), pch=21,
+       col="#777777", bty="n")
+legend(x=1.1, y=0.3, c("liens intergroupe","liens intragroupe"),
+       col=c("red","black"),lty = 1 , cex=.8, ncol=1)
+legend(x=1.1, y=0.05, c(" faible nombre de collaborations"," nombre moyens de collaborations"," grand nombre de collaborations"),pt.bg= "white", pch=21,
+       col="#777777",pt.cex= c(1,2,3))
 
 
 #on calcule la modularité à partir de ces communautés
