@@ -10,7 +10,11 @@ packages:
   - stringr
   - RSQLite
   - igraph
+  - ggplot2
+  - gplots
 ---
+
+
 
 
 ## Résumé 
@@ -24,13 +28,13 @@ Les réseaux de collaboration écologique sont complexes et comportent plusieurs
 Les données pour la réalisation de ce projet ont été acquise dans la population d’étudiant du cours Méthodes en écologie computationnelle (BIO500) à l’université de Sherbrooke (N = 38) au cours de la session d’hiver 2023. Un document Excel a été rempli par chaque étudiant pour enregistrer leurs informations personnelles, les cours qu'ils ont suivis tout au long de leur parcours, ainsi que les collaborations effectuées dans ces différents cours. Une collaboration a été défini dans ce projet comme tout événements de coopération entre deux étudiants dans le cadre de travaux scolaires. Par exemple, dans ce présent projet Béatrice a collaboré avec 3 personnes, soit Félix-Olivier, Hugo et Rosalie. Par la suite, étant donné la présence de doublon et d’erreurs de saisies, nous avons élaboré un algorithme spécifique à nos données pour le nettoyage de celles-ci.Ces données nettoyées ont ensuite été injecté dans une base de données SQL qui nous a permis de réaliser nos analyses. Le nettoyage des données et les analyses ont été effectué à l’aide du logiciel R (R Core Team, 2023). Pour obtenir plus d'informations sur le nettoyage de données, l'analyse de données ou les données en général, vous pouvez consulter le dépôt de travail Github suivant https://github.com/HugoM-B/Bio500. 
 
 ## Résultats
-```{r}
+```{r,echo=FALSE}
 #lecture des données
-etud_anne<-tar_read(etud_anne)
-
-# créer les classes de points
+data<-tar_read(list_requete)
+etud_anne<-data[[1]]
+#créer les classes de points
 etud_anne$collaboration <- cut(etud_anne$nb_collaborations, 
-                               breaks = c(0, 1, 5, 10, 25, 50, 100, 250, 1000), 
+                             breaks = c(0, 1, 5, 10, 25, 50, 100, 250, 1000), 
                                labels = c("1", "]1-5]", "]5-10]", "]10-25]", "]25-50]", "]50-100]", "]100-250]", "800+"))
 
 
@@ -45,10 +49,10 @@ ggplot(etud_anne, aes(x = annee_debut_etudiant1, y = annee_debut_etudiant2, size
 
 ```
 
-```{r}
+```{r,echo=FALSE}
 #lecture des données
-nb_collabo_by_year <-tar_read(nb_collabo_by_year)
-
+data<-tar_read(list_requete)
+nb_collabo_by_year<-data[[2]]
 # Remplacer les valeurs manquantes par "Na"
 nb_collabo_by_year[1,1] <- "Na"
 
@@ -57,18 +61,137 @@ ordre_annees <- c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022",
 # création d'une palette de couleur
 couleurs_pastel <- c("#FFE4E1", "#FA8072", "#90EE90", "#87CEFA", "#FFDAB9", "#ADD8E6", "#F08080", "#98FB98", "#BA55D3")
 
-
 #création du graphique pour le nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré par session d'entrée
 
 ggplot(nb_collabo_by_year, aes(x = annee_debut, y = moyenne_collab, fill = annee_debut)) +
+  geom_bar(stat = "identity") +
   scale_fill_manual(values = couleurs_pastel) +
   labs(title = "Nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré par session d'entrée",
        y = "Nombre moyen d'étudiants") +
   xlab("Session d'entrée à l'université") +
   scale_x_discrete(limits = ordre_annees) +
   theme_classic()
+```
+```{r,echo=FALSE}
+#lecture des données
+data<-tar_read(list_requete)
+liens_paires_bio500<-data[[3]]
+
+# get names for row and columns
+nameVals <- sort(unique(unlist(liens_paires_bio500[1:2])))
+# construct 0 matrix of correct dimensions with row and column names
+myMat <- matrix(0, length(nameVals), length(nameVals), dimnames = list(nameVals, nameVals))
+
+# fill in the matrix with matrix indexing on row and column names
+myMat[as.matrix(liens_paires_bio500[c("etudiant1", "etudiant2")])] <- liens_paires_bio500[["liens_paire"]]
+
+#faire le graphique
+#cree un objet graphique
+graph<-graph.adjacency(myMat, weighted = NULL, diag = TRUE)
+
+# Calculer le degré de chaque
+deg <- apply(myMat, 2, sum) + apply(myMat, 1, sum)
+
+# Le rang pour chaque noeud
+rk <- rank(deg)
+
+# Faire un code de couleur
+col.vec <-heat.colors(38)
+
+#attribuer les couleurs aux noeuds
+V(graph)$color = col.vec[rk]
+
+#attribuer des tailles
+col.vec <- seq(5,10,length.out = 38)
+
+#couleure selon la taille
+V(graph)$size = col.vec[rk]
+V(graph)$edge=col.vec[rk]
+#####
+# Ajustement de la largeur des liens en fonction du nombre de liens entre les étudiants
+#edge.width <-rescale(liens_paires_bio500$liens_paire, to= c(1,5))
+
+#####
+#faire la figure de liens
+
+#c'est quoi les communautés dans le graph
+wtc = walktrap.community(graph)
+
+plot(wtc, graph, edge.arrow.mode = 0,vertex.label=NA,
+     vertex.frame.color = "black", edge.curved = 0,main = "Collaborations entre les étudiants du cours BIO500 en fonction de différents groupes de travail", font.main = 4,
+     layout = layout_with_kk(graph))
+legend(x=1.1, y=1, c("groupe1","groupe2","groupe3","groupe4","groupe5","groupe6"), fill = c("lightgreen","lightyellow","orchid1","lightblue","indianred1","slateblue1"))
+legend(x=1.133, y=1, c(" ","  ","  ","  ","  ","  "),pt.bg= c("darkgreen","lightblue","darkorange2","gold","gold2","royalblue2"), pch=21,
+       col="#777777", bty="n")
+legend(x=1.1, y=0.3, c("liens intergroupe","liens intragroupe"),
+       col=c("red","black"),lty = 1 , cex=.8, ncol=1)
+legend(x=1.1, y=0.05, c(" faible nombre de collaborations"," nombre moyens de collaborations"," grand nombre de collaborations"),pt.bg= "white", pch=21,
+       col="#777777",pt.cex= c(1,2,3))
 
 ```
+
+```{r,echo=FALSE}
+#read data
+data<-tar_read(list_requete)
+collab_pair_region<-data[[4]]
+data1<-tar_read(list_table_apres_nettoyage)
+etudiant<-data1[[1]]
+ #Créer la liste des regions administratives et inclure l'ensemble des valeurs de distance regionnale dans une matrice (voir methodologie pour l'origine des valeurs)
+liste<-unique(etudiant$region_administrative)
+connect<-c(1,2,2,4,3,3,4,3,3,4,3,3,4,2,4,0,3,2,1,2,3,2,2,4,2,3,4,3,3,3,2,4,0,3,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,3,3,1,2,3,3,2,3,3,4,3,3,3,4,0,3,3,2,2,2,1,2,2,2,3,4,3,2,2,2,3,0,3,3,2,2,3,2,1,3,3,4,5,2,2,3,2,2,0,4,4,4,3,3,2,3,1,3,4,5,3,2,2,3,3,0,4,3,2,3,2,2,3,3,1,2,3,4,3,3,3,4,0,2,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1,4,4,5,3,4,5,5,3,2,1,6,5,5,5,6,0,2,3,3,2,4,3,2,3,4,5,6,1,2,4,2,2,0,5,3,3,2,3,2,2,2,3,4,5,2,1,3,2,2,0,4,4,3,3,3,2,3,2,3,4,5,4,3,1,3,4,0,4,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,4,3,4,3,2,3,4,5,6,2,2,4,3,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1)
+myMatregion <- matrix(connect, length(liste), length(liste), dimnames = list(liste, liste))
+
+#Calcule de la somme de collaborations par region
+collabpar_region<-collab_pair_region[,c(1:2)]
+nomreg<-unique(collabpar_region$region1)
+totalcollab_par_reg<-matrix(ncol = 2,nrow = length(nomreg))
+colnames(totalcollab_par_reg)<-c("region1","nb_collabo")
+q<-1
+for (t in 1:length(nomreg)) {
+  collab_t<-subset(collabpar_region,collabpar_region$region1==nomreg[t])
+  totalcollab_par_reg[q,1]<-nomreg[t]
+  totalcollab_par_reg[q,2]<-sum(collab_t$nb_collaborations)
+  q<-q+1
+}
+#Ajout du nombre de collaboration par region au tableau présentant les collaboration entr pair de region selon la region 1
+indices <- which(myMatregion != 0, arr.ind = TRUE)
+tableau_distances <- data.frame(region1 = rownames(myMatregion)[indices[, 1]], region2 = colnames(myMatregion)[indices[, 2]], distance = myMatregion[indices])
+tableau_final <- merge(collab_pair_region, tableau_distances, by = c("region1", "region2"))
+# Fusionner les valeurs propres avec le tableau final
+tableau_final <- merge(tableau_final, totalcollab_par_reg, by = "region1")
+
+#Ajout d'une colonne de collaboration pondéré selon la region
+as.data.frame(tableau_final)
+tableau_final[,3]<-as.numeric(tableau_final[,3])
+tableau_final[,5]<-as.numeric(tableau_final[,5])
+tableau_final$proportion<-tableau_final[,3]/tableau_final[,5]
+#Moyenne et écart-type sur cette collaboration pondéré
+Donnee_vis<-matrix(nrow = 5, ncol = 3)
+colnames(Donnee_vis)<-c("distance","moyenne","sd")
+e<-c(1,2,3,4,5)
+q<-1
+Donnee_vis[,1]<-e
+for (p in 1:5) {
+  distance<-subset(tableau_final, tableau_final$distance==e[p])
+  Donnee_vis[q,2]<-mean(distance$proportion)
+  Donnee_vis[q,3]<-sd(distance$proportion)
+  q<-q+1
+}
+install.packages("gplots")
+library(gplots)
+ecart_sup<-Donnee_vis[,2]+Donnee_vis[,3]
+ecart_inf<-Donnee_vis[,2]-Donnee_vis[,3]
+mp <- barplot2(Donnee_vis[,2], beside = TRUE,
+               col = c("lightgreen","yellow", 
+                       "orange", "red","black"),
+               legend = Donnee_vis[,1], ylim = c(0,0.4),
+               main = "Proportion des collaborations en fonction de la distance regionnale", font.main = 4,
+               sub = "Distance en nombre de region",
+               cex.names = 1.5, plot.ci = TRUE, ci.l = ecart_inf, ci.u = ecart_sup,
+               plot.grid = TRUE)
+
+```
+
 ## Discussions 
 
 ## Bibliographie 
