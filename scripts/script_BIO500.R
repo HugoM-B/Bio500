@@ -41,7 +41,7 @@ for(tab in tabNames) {
   tabFiles <- allFiles[grep(tab, allFiles)]
   
   for(groupe in 1:nbGroupe) {
-    # Definir le nom de l'obj dans lequel sauver les donnees de la table tab du groupe groupe
+    # Définir le nom de l'obj dans lequel sauver les donnees de la table tab du groupe groupe
     tabName <- paste0(tab, "_", groupe)
     
     # Avant  de charger les données, il faut savoir c'est quoi le séparateur utilisé car
@@ -50,16 +50,17 @@ for(tab in tabNames) {
     L <- readLines(ficher, n = 1) # charger première ligne du donnée
     separateur <- ifelse(grepl(';', L), ';', ',') # S'il y a un ";", separateur est donc ";"
     
-    # charger le donnée avec le bon séparateur et donner le nom tabName
+    # Charger les données avec le bon séparateur et donner le nom tabName
     assign(tabName, read.csv(ficher, sep = separateur, stringsAsFactors = FALSE, na.strings=c(""," ","NA")))
     
   }
 }
 
-# nettoyer des objets temporaires utilisé dans la boucle
+# Nettoyage des objets temporaires utilisés dans la boucle 
 rm(list = c('allFiles', 'tab', 'tabFiles', 'tabName', 'ficher', 'groupe'))
 i<-seq(1,11,1)
-# combiner les tableaux
+
+# Combiner les différents tableaux afin d'obtenir nos trois grandes tables principales, soit collabo, cours et etudiant
 #collaboration
 collaboration_7<-collaboration_7[,1:4]
 #collab_name<-c("collaboration_1","collaboration_2","collaboration_3","collaboration_4","collaboration_5","collaboration_6","collaboration_7","collaboration_8","collaboration_9","collaboration_10")
