@@ -152,6 +152,7 @@ collabo <- data.frame(lapply(collabo, function(x) {
 #Loader package stringr
 library(stringr)
 
+#Repérage des noms mal orthographiés à l'aide de patterns pour pouvoir ensuite les corriger
 etudiant$patterna<-str_sub(etudiant$prenom_nom,1,-5)
 etudiant$patternb<-str_sub(etudiant$prenom_nom,5,-1)
 etudiant$patternc<-str_sub(etudiant$prenom_nom,1,13)
@@ -164,14 +165,12 @@ etudiant<-unique(etudiant[!duplicated(etudiant$patternd),])
 
 
 
-
-
-####Nettoyer collab
+####Nettoyage collabo
 # Enlever collaboration avec soi-même
 #-----------------------------------------------------
 collabo <- subset(collabo, etudiant1 != etudiant2)
 
-
+#Extraction de certaines parties de noms à l'aide de patterns (dans le but de corriger ceux qui sont mal orthographiés) 
 collabo$pata<-str_sub(collabo$etudiant1 ,1,-5)
 collabo$patb<-str_sub(collabo$etudiant1,5,-1)
 collabo$patc<-str_sub(collabo$etudiant1,1,13)
@@ -182,7 +181,7 @@ collabo$patb2<-str_sub(collabo$etudiant2,5,-1)
 collabo$patc2<-str_sub(collabo$etudiant2,1,13)
 collabo$patd2<-str_sub(collabo$etudiant2,-15,-1)
 
-##etudiant 1
+##Correspondance des noms d'etudiant 1 
 correspondance<-match(collabo$pata, etudiant$patterna)
 k<-seq(1,length(collabo$etudiant1),by=1)
 collabo$pata[k]<-etudiant$prenom_nom[correspondance[k]]
@@ -200,7 +199,7 @@ k<-seq(1,length(collabo$etudiant1),by=1)
 collabo$patd[k]<-etudiant$prenom_nom[correspondance[k]]
 
 
-##etudiant 2
+###Correspondance des noms d'etudiant 2
 correspondance<-match(collabo$pata2, etudiant$patterna)
 k<-seq(1,length(collabo$etudiant2),by=1)
 collabo$pata2[k]<-etudiant$prenom_nom[correspondance[k]]
@@ -218,7 +217,7 @@ k<-seq(1,length(collabo$etudiant2),by=1)
 collabo$patd2[k]<-etudiant$prenom_nom[correspondance[k]]
 
 
-###remplacer les valeurs
+#Remplacer les parties de noms identifiées par les patterns par les bons noms (etudiant 1)
 collabo$etudiant10<-collabo$pata
 collaboNa<-subset(collabo, !complete.cases(collabo$etudiant10))
 collaboSNA<-subset(collabo, complete.cases(collabo$etudiant10))
@@ -243,8 +242,8 @@ collabo<-rbind(collaboSNA,collaboNa)
 
 collabo$etudiant1<-collabo$etudiant10
 
-####etudiant 2
 
+#Remplacer les parties de noms identifiées par les patterns par les bons noms (etudiant 2)
 collabo$etudiant11<-collabo$pata2
 collaboNa<-subset(collabo, !complete.cases(collabo$etudiant11))
 collaboSNA<-subset(collabo, complete.cases(collabo$etudiant11))
