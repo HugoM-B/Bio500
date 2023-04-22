@@ -391,14 +391,14 @@ dbWriteTable(con, append = TRUE, name = "collabo", value =  collabo, row.names =
 #REQUÊTES
 #nombre de liens par étudiants
 
-sql_requete <- "SELECT etudiant1.annee_debut as annee_debut_etudiant1, etudiant2.annee_debut as annee_debut_etudiant2, COUNT(*) as nb_collaborations
+sql_requete1 <- "SELECT etudiant1.annee_debut as annee_debut_etudiant1, etudiant2.annee_debut as annee_debut_etudiant2, COUNT(*) as nb_collaborations
                 FROM collabo
                 INNER JOIN etudiant as etudiant1 ON collabo.etudiant1 = etudiant1.prenom_nom
                 INNER JOIN etudiant as etudiant2 ON collabo.etudiant2 = etudiant2.prenom_nom
                 WHERE etudiant1.annee_debut IS NOT NULL AND etudiant2.annee_debut IS NOT NULL
                 GROUP BY etudiant1.annee_debut, etudiant2.annee_debut;"
 
-etud_anne <- dbGetQuery(con, sql_requete)
+etud_anne <- dbGetQuery(con, sql_requete1)
 head(etud_anne)
 
 library(ggplot2)
@@ -418,7 +418,7 @@ ggplot(etud_anne, aes(x = annee_debut_etudiant1, y = annee_debut_etudiant2, size
                     labels = c("1", "<5", "<10", "<25", "<50", "<100", "<250", "<1000"))
 
 
-sql_requete <- "SELECT e.annee_debut, AVG(total_collab) AS moyenne_collab
+sql_requete2 <- "SELECT e.annee_debut, AVG(total_collab) AS moyenne_collab
 FROM (
 SELECT etudiant1, COUNT(DISTINCT etudiant2) AS total_collab
 FROM collabo
@@ -436,31 +436,31 @@ ORDER BY e.annee_debut ASC;
 
 
 
-nb_collabo_by_year <- dbGetQuery(con, sql_requete)
+nb_collabo_by_year <- dbGetQuery(con, sql_requete2)
 head(nb_collabo_by_year)
+
 
 # Remplacer les valeurs manquantes par "Na"
 nb_collabo_by_year[1,1] <- "Na"
 
-# Définir l'ordre des niveaux de la variable annee_debut
+# Définir l'ordre des session d'entré à l'uni de la variable annee_debut
 ordre_annees <- c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022", "A2022","Na")
-nb_collabo_by_year$annee_debut <- factor(nb_collabo_by_year$annee_debut, levels = ordre_annees)
-
+# création d'une palette de couleur
 couleurs_pastel <- c("#FFE4E1", "#FA8072", "#90EE90", "#87CEFA", "#FFDAB9", "#ADD8E6", "#F08080", "#98FB98", "#BA55D3")
 
 
+#création du graphique pour le nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré par session d'entrée
 
 ggplot(nb_collabo_by_year, aes(x = annee_debut, y = moyenne_collab, fill = annee_debut)) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = couleurs_pastel) +
-  labs(title = "Nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré, par session d'entrée à l'université",
+  labs(title = "Nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré par session d'entrée",
        y = "Nombre moyen d'étudiants") +
   xlab("Session d'entrée à l'université") +
   scale_x_discrete(limits = ordre_annees) +
   theme_classic()
 
-
-sql_requete <- "
+sql_requete3 <- "
 SELECT DISTINCT etudiant1, etudiant2, COUNT(*) AS liens_paire
  FROM collabo
 WHERE etudiant1 IN (
@@ -478,10 +478,10 @@ AND etudiant2 IN (
 GROUP BY etudiant1, etudiant2
 ;"
 
-liens_paires_bio500 <-dbGetQuery(con, sql_requete)
+liens_paires_bio500 <-dbGetQuery(con, sql_requete3)
 head(liens_paires_bio500)
-#
-sql_requete <- "
+
+sql_requete4 <- "
  SELECT COUNT(*) AS nb_collaborations, e1.region_administrative AS region1, e2.region_administrative AS region2
 FROM collabo c 
 JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
@@ -502,7 +502,7 @@ AND etudiant2 IN (
  ORDER BY nb_collaborations DESC
  ;"
 
-collab_pair_region <-dbGetQuery(con, sql_requete)
+collab_pair_region <-dbGetQuery(con, sql_requete4)
 head(collab_pair_region)
 
 #Graphique de centralité
