@@ -61,7 +61,6 @@ couleurs_pastel <- c("#FFE4E1", "#FA8072", "#90EE90", "#87CEFA", "#FFDAB9", "#AD
 #création du graphique pour le nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré par session d'entrée
 
 ggplot(nb_collabo_by_year, aes(x = annee_debut, y = moyenne_collab, fill = annee_debut)) +
-  geom_bar(stat = "identity") +
   scale_fill_manual(values = couleurs_pastel) +
   labs(title = "Nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré par session d'entrée",
        y = "Nombre moyen d'étudiants") +
