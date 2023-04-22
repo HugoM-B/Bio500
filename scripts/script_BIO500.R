@@ -164,6 +164,8 @@ etudiant<-unique(etudiant[!duplicated(etudiant$patternd),])
 
 
 
+
+
 ####Nettoyer collab
 # Enlever collaboration avec soi-même
 #-----------------------------------------------------
