@@ -544,7 +544,7 @@ legend(x=1.1, y=0.05, c(" faible nombre de collaborations"," nombre moyens de co
        col="#777777",pt.cex= c(1,2,3))
 
 
- #Créer la liste des regions administratives et inclure l'ensemble des valeurs de distance regionnale dans une matrice (voir methodologie pour l'origine des valeurs)
+#Créer la liste des regions administratives et inclure l'ensemble des valeurs de distance regionnale dans une matrice (voir methodologie pour l'origine des valeurs)
 liste<-unique(etudiant$region_administrative)
 connect<-c(1,2,2,4,3,3,4,3,3,4,3,3,4,2,4,0,3,2,1,2,3,2,2,4,2,3,4,3,3,3,2,4,0,3,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,3,3,1,2,3,3,2,3,3,4,3,3,3,4,0,3,3,2,2,2,1,2,2,2,3,4,3,2,2,2,3,0,3,3,2,2,3,2,1,3,3,4,5,2,2,3,2,2,0,4,4,4,3,3,2,3,1,3,4,5,3,2,2,3,3,0,4,3,2,3,2,2,3,3,1,2,3,4,3,3,3,4,0,2,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1,4,4,5,3,4,5,5,3,2,1,6,5,5,5,6,0,2,3,3,2,4,3,2,3,4,5,6,1,2,4,2,2,0,5,3,3,2,3,2,2,2,3,4,5,2,1,3,2,2,0,4,4,3,3,3,2,3,2,3,4,5,4,3,1,3,4,0,4,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,4,3,4,3,2,3,4,5,6,2,2,4,3,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1)
 myMatregion <- matrix(connect, length(liste), length(liste), dimnames = list(liste, liste))
