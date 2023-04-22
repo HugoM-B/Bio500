@@ -329,7 +329,7 @@ rm(collabofinal)
 
 #CRÉER LA BASE DE DONNÉES
 
-con <- dbConnect(SQLite(), dbname="reseau511.db")
+con <- dbConnect(SQLite(), dbname="reseau537.db")
 
 tbl_etudiant <-"
 CREATE TABLE etudiant (
@@ -386,6 +386,76 @@ dbWriteTable(con, append = TRUE, name = "collabo", value =  collabo, row.names =
 
 #REQUÊTES
 #nombre de liens par étudiants
+
+sql_requete <- "SELECT etudiant1.annee_debut as annee_debut_etudiant1, etudiant2.annee_debut as annee_debut_etudiant2, COUNT(*) as nb_collaborations
+                FROM collabo
+                INNER JOIN etudiant as etudiant1 ON collabo.etudiant1 = etudiant1.prenom_nom
+                INNER JOIN etudiant as etudiant2 ON collabo.etudiant2 = etudiant2.prenom_nom
+                WHERE etudiant1.annee_debut IS NOT NULL AND etudiant2.annee_debut IS NOT NULL
+                GROUP BY etudiant1.annee_debut, etudiant2.annee_debut;"
+
+etud_anne <- dbGetQuery(con, sql_requete)
+head(etud_anne)
+
+library(ggplot2)
+# créer le graphique avec ggplot2
+etud_anne$taille_groupe <- cut(etud_anne$nb_collaborations, 
+                               breaks = c(0, 1, 5, 10, 25, 50, 100, 250, 1000), 
+                               labels = c("1", "<5", "<10", "<25", "<50", "<100", "<250", "<1000"))
+
+
+# Créer le graphique avec ggplot2
+ggplot(etud_anne, aes(x = annee_debut_etudiant1, y = annee_debut_etudiant2, size = taille_groupe)) +
+  geom_point() +
+  labs(x = "Année d'entrée de l'étudiant 2", y = "Année d'entrée de l'étudiant 1", size = "Taille de groupe", color = "Nombre de collaborations") +
+  scale_x_discrete(limits = c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022", "A2022")) +
+  scale_y_discrete(limits = c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022", "A2022")) +
+  scale_size_manual(values = c(1, 2, 3, 4, 6, 8 ,10),
+                    labels = c("1", "<5", "<10", "<25", "<50", "<100", "<250", "<1000"))
+
+
+sql_requete <- "SELECT e.annee_debut, AVG(total_collab) AS moyenne_collab
+FROM (
+SELECT etudiant1, COUNT(DISTINCT etudiant2) AS total_collab
+FROM collabo
+GROUP BY etudiant1
+UNION ALL
+SELECT etudiant2, COUNT(DISTINCT etudiant1) AS total_collab
+FROM collabo
+GROUP BY etudiant2
+) c
+RIGHT JOIN etudiant e ON c.etudiant1 = e.prenom_nom
+GROUP BY e.annee_debut
+ORDER BY e.annee_debut ASC;
+"
+
+
+
+
+nb_collabo_by_year <- dbGetQuery(con, sql_requete)
+head(nb_collabo_by_year)
+
+# Remplacer les valeurs manquantes par "Na"
+nb_collabo_by_year[1,1] <- "Na"
+
+# Définir l'ordre des niveaux de la variable annee_debut
+ordre_annees <- c("H2019", "A2019", "H2020", "A2020", "E2021", "A2021", "H2022", "A2022","Na")
+nb_collabo_by_year$annee_debut <- factor(nb_collabo_by_year$annee_debut, levels = ordre_annees)
+
+couleurs_pastel <- c("#FFE4E1", "#FA8072", "#90EE90", "#87CEFA", "#FFDAB9", "#ADD8E6", "#F08080", "#98FB98", "#BA55D3")
+
+
+
+ggplot(nb_collabo_by_year, aes(x = annee_debut, y = moyenne_collab, fill = annee_debut)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = palette_pastel) +
+  labs(title = "Nombre moyen d'étudiants avec lesquels chaque étudiant a collaboré, par session d'entrée à l'université",
+       y = "Nombre moyen d'étudiants") +
+  xlab("Session d'entrée à l'université") +
+  scale_x_discrete(limits = ordre_annees) +
+  theme_classic()
+
+
 
 sql_requete <- "
 SELECT DISTINCT etudiant1,
@@ -543,3 +613,23 @@ V(graph)$etudiant1<-liens_paires_bio500[,1]
 plot(graph, vertex.label=NA, edge.arrow.mode = 0,
      vertex.frame.color = NA,
      layout = layout.kamada.kawai(graph))
+
+
+#requete date d'entré à l'uni pour chaque collaboration
+#Requete pour savoir les Collaborations entre étudiants de la même chohorte
+sql_requete <-
+  "SELECT c.etudiant1, c.etudiant2,
+COUNT(*) AS nb_collaborations, e1.annee_debut, e2.annee_debut
+FROM collabo c 
+JOIN etudiant e1 ON c.etudiant1 = e1.prenom_nom 
+JOIN etudiant e2 ON c.etudiant2 = e2.prenom_nom 
+WHERE 
+e1.annee_debut = e2.annee_debut
+GROUP BY 
+c.etudiant1, c.etudiant2, e1.annee_debut, e2.annee_debut
+ORDER BY 
+nb_collaborations DESC
+;"
+mm_ad_collabo  <-dbGetQuery(con, sql_requete)
+head(mm_ad_collabo)
+

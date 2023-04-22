@@ -4,7 +4,7 @@
 library(targets)
 library(tarchetypes) # Utilisé pour render le rapport (tar_render)
 
-tar_option_set(packages = c("rmarkdown","knitr","stringr","RSQLite")) # Charger les libraries dans l'environnement global
+tar_option_set(packages = c("rmarkdown","knitr","stringr","RSQLite","igraph")) # Charger les libraries dans l'environnement global
 source("scripts/fonction2.0.R")
 list(
   tar_target(
@@ -14,11 +14,11 @@ list(
   ),
   tar_target(
     name = file_paths, # Cible
-    command = list.files(path, full.names = TRUE) # Liste les fichiers dans le dossier
+    command = list.files(path) # Liste les fichiers dans le dossier
   ),
  tar_target(
    name = list_table_avant_nettoyage, # Cible
-   command = import_function(path,file_paths)
+   command = import_function(file_paths)
  ),
  tar_target(
    name = list_table_apres_nettoyage, # Cible

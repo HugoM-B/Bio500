@@ -7,21 +7,20 @@
 #setwd("C:/Users/Hugo/Documents/methode/Bio500")
 #setwd("C:/Users/foduf/Desktop/methode/Bio500")
 
-#directory<-"donnees_BIO500/raw"
-#table_names<-list.files(directory, full.names = TRUE)
-import_function<-function(directory,table_names){
-  allFiles <- dir(directory)
+table_names<-list.files(directory)
+import_function<-function(x){
+  #allFiles <- dir(directory)
   
   # Tables à fusioner
   tabNames <- c('collaboration', 'cour', 'etudiant')
   
   # Nombre de groupes
-  nbGroupe <- length(grep(tabNames[1], table_names))
+  nbGroupe <- length(grep(tabNames[1], x))
   
   # Charger les donnees
   for(tab in tabNames) {
     # prendre seulement les fichers de la table specifique `tab`
-    tabFiles <- allFiles[grep(tab, allFiles)]
+    tabFiles <- x[grep(tab, x)]
     
     for(groupe in 1:nbGroupe) {
       # Definir le nom de l'obj dans lequel sauver les donnees de la table `tab` du groupe `groupe`
@@ -40,7 +39,7 @@ import_function<-function(directory,table_names){
   }
   
   # nettoyer des objets temporaires utilisé dans la boucle
-  rm(list = c('table_names', 'tab', 'tabFiles', 'tabName', 'ficher', 'groupe'))
+  rm(list = c('x', 'tab', 'tabFiles', 'tabName', 'ficher', 'groupe'))
   i<-seq(1,11,1)
   # combiner les tableaux
   #collaboration
@@ -66,7 +65,7 @@ import_function<-function(directory,table_names){
   return(list_table)
 }
 #-----------------------------------------------------
-#list<-import_function(directory = directory,table_names = table_names)
+#list<-import_function(table_names)
 # 2.
 
 nettoyage_function<-function(x){
