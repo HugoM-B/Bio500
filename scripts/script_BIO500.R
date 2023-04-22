@@ -84,6 +84,7 @@ rm(collaboration_1,collaboration_2,collaboration_3,collaboration_4,collaboration
 # 2.
 library(RSQLite)
 
+#Conformer les données 
 etudiant <- data.frame(lapply(etudiant, function(x) {
   gsub("-", "_", x) }))
 cours <- data.frame(lapply(cours, function(x) {
@@ -103,10 +104,12 @@ etudiant <- data.frame(lapply(etudiant, function(x) {
 collabo <- data.frame(lapply(collabo, function(x) {
   gsub("<a0>", "", x) }))
 
+#Enlever les doublons
 etudiant<-unique(etudiant)
 cours<-unique(cours)
 collabo<-unique(collabo)
 
+#Enlever ls lignes vides 
 etudiant <- subset(etudiant, complete.cases(etudiant$prenom_nom))
 cours<- subset(cours, complete.cases(cours$sigle))
 collabo <- subset(collabo, complete.cases(collabo$etudiant1))
@@ -115,10 +118,10 @@ cours <-as.data.frame(cours)
 collabo <-as.data.frame(collabo)
 
 
-###nettoyer cours
+#Nettoyer les cours duppliqués
 cours<-cours[!duplicated(cours$sigle),]
 
-####nettoyer étudiant avec info vs pas info
+#Nettoyer étudiant avec info vs pas info
 etud<-subset(etudiant, complete.cases(etudiant$regime_coop))
 etudnoinfo<-subset(etudiant, !complete.cases(etudiant$regime_coop))
 
@@ -129,7 +132,7 @@ etudnoinfo<-etudnoinfo[,-9]
 etudiant<-rbind(etud,etudnoinfo)
 rm(etud,etudnoinfo)
 
-
+#Uniformiser le format des noms
 collabo <- data.frame(lapply(collabo, function(x) {
   gsub("francis_bourrassa", "francis_bourassa", x)}))
 
@@ -146,7 +149,7 @@ collabo <- data.frame(lapply(collabo, function(x) {
   gsub("frederick_laberge", "frederic_laberge", x)}))
 
 
-###loader package stringr
+#Loader package stringr
 library(stringr)
 
 etudiant$patterna<-str_sub(etudiant$prenom_nom,1,-5)
