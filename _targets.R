@@ -4,7 +4,7 @@
 library(targets)
 library(tarchetypes) # Utilisé pour render le rapport (tar_render)
 
-tar_option_set(packages = c("rmarkdown","knitr","stringr","RSQLite","igraph")) # Charger les libraries dans l'environnement global
+tar_option_set(packages = c("rmarkdown","knitr","stringr","RSQLite","igraph","ggplot2","gplots")) # Charger les libraries dans l'environnement global
 source("scripts/fonction2.0.R")
 list(
   tar_target(
@@ -29,13 +29,13 @@ list(
    command = create_data.base_func(list_table_apres_nettoyage)
  ),
  tar_target(
-   name = list_requete,  #retourner con pour les requêtes à venir
+   name = list_requete,  #retourner les objets sortant des requêtes
    command = requete_function(con)
  ),
  tar_render(
    name = rapport, # Cible du rapport
-   path = "rapport/rapport.Rmd" # Le path du rapport à renderiser
-)
+   path = "./rapport/rapport.Rmd" # Le path du rapport à renderiser
+ )
 )
 
 
