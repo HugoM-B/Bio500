@@ -272,13 +272,7 @@ collabofinal<- unique(collabofinal)
 
 rm(collaboNa,collaboSNA, collaboNasave, collaboNasave2)
 
-
-
-#new_name<-c('maude_viens','eloise_bernier','karim_hamzaoui','naomie_morin','justine_lebelle','gabrielle_moreault','maxence_comyn')
-#for(i in 1:7){
-#etudiant_nom[1 + length(etudiant_nom),1]<-new_name[i] 
-#}
-
+#finaliser donne etudiant
 etudiant<-etudiant[,-c(9:12)]
 
 num<-seq(1,length(etudiant$prenom_nom),1)
@@ -287,16 +281,14 @@ etudiant <- subset(etudiant, prenom_nom != 'arianne_barette' & prenom_nom != 'ma
 etudiant<-etudiant[,c(1:8)]
 
 
-#-----------------------------------------------------
-# Ajouter les lignes d'étudiants manquantes dans etudiant
-#-----------------------------------------------------
 
-# Voir qui il manque --------------------Pour la fin
+# Ajouter les lignes d'étudiants manquantes dans etudiant
+# Voir qui il manque 
 unique_et1_c<-unique(collabo$etudiant1)
 unique_etudiant<-unique(etudiant$prenom_nom)
 nom_manquant1<-setdiff(unique_et1_c, unique_etudiant)
 
-#Ajouter qui il manque----------------------------------- CHANGER LE CODE!!!!
+#Ajouter qui il manque
 donnees_abs <- c("eloise_bernier", "eloise", "bernier", NA, NA, NA, NA, NA, "naomie_morin", "naomie", "morin", NA, NA, NA, NA, NA, "karim_hamzaoui", "karim", "hamzaoui", NA, NA, NA, NA, NA, "gabrielle_moreault", "gabrielle", "moreault", NA, NA, NA, NA, NA, "maxence_comyn", "maxence", "comyn", NA, NA, NA, NA, NA, "maude_viens", "maude", "viens", NA, NA, NA, NA, NA, "louis_philippe_raymond", "louis-philippe", "raymond",NA, NA, NA, NA, NA)
 etudiant_abs <- matrix(donnees_abs, nrow = 7, ncol = 8, byrow = TRUE)
 colnames(etudiant_abs) <- c("prenom_nom", "prenom", "nom", "region_administrative", "regime_coop", "formation_prealable", "annee_debut", "programme")
@@ -305,7 +297,7 @@ rm(donnees_abs, etudiant_abs)
 
 etudiant<-unique(etudiant)
 
-
+#changer manuellement les erreur restantes
 unique_et1_c<-unique(collabofinal$etudiant1)
 unique_etudiant<-unique(etudiant$prenom_nom)
 nom_diff<-setdiff(unique_et1_c, unique_etudiant)
@@ -381,10 +373,6 @@ dbListTables(con)
 
 #INSÉRER LES DONNÉES DANS LES TABLES
 
-#bd_etudiant <- read.cvs(file = )
-#bd_cours <- read.cvs(file = )
-#bd_collabo <- read.csv(file = )
-
 dbWriteTable(con, append = TRUE, name = "etudiant", value = etudiant, row.names = FALSE, na.rm = TRUE)
 dbWriteTable(con, append = TRUE, name = "cours", value = cours, row.names = FALSE)
 dbWriteTable(con, append = TRUE, name = "collabo", value =  collabo, row.names = FALSE)
@@ -403,6 +391,8 @@ etud_anne <- dbGetQuery(con, sql_requete1)
 head(etud_anne)
 
 library(ggplot2)
+
+
 # créer le graphique avec ggplot2
 etud_anne$taille_groupe <- cut(etud_anne$nb_collaborations, 
                                breaks = c(0, 1, 5, 10, 25, 50, 100, 250, 1000), 
@@ -418,7 +408,7 @@ ggplot(etud_anne, aes(x = annee_debut_etudiant1, y = annee_debut_etudiant2, size
   scale_size_manual(values = c(1, 2, 3, 4, 6, 8 ,10),
                     labels = c("1", "<5", "<10", "<25", "<50", "<100", "<250", "<1000"))
 
-
+#créer table nombre de collaboration par année
 sql_requete2 <- "SELECT e.annee_debut, AVG(total_collab) AS moyenne_collab
 FROM (
 SELECT etudiant1, COUNT(DISTINCT etudiant2) AS total_collab
@@ -433,10 +423,6 @@ RIGHT JOIN etudiant e ON c.etudiant1 = e.prenom_nom
 GROUP BY e.annee_debut
 ORDER BY e.annee_debut ASC;
 "
-
-
-
-
 nb_collabo_by_year <- dbGetQuery(con, sql_requete2)
 head(nb_collabo_by_year)
 
@@ -461,6 +447,7 @@ ggplot(nb_collabo_by_year, aes(x = annee_debut, y = moyenne_collab, fill = annee
   scale_x_discrete(limits = ordre_annees) +
   theme_classic() + theme(plot.title = element_text(size = 6))
 
+#Table pour les liens entre étudiants qui ont le cours bio500
 sql_requete3 <- "
 SELECT DISTINCT etudiant1, etudiant2, COUNT(*) AS liens_paire
  FROM collabo
@@ -482,6 +469,7 @@ GROUP BY etudiant1, etudiant2
 liens_paires_bio500 <-dbGetQuery(con, sql_requete3)
 head(liens_paires_bio500)
 
+#collaboration entre chaque pair de region
 sql_requete4 <- "
  SELECT COUNT(*) AS nb_collaborations, e1.region_administrative AS region1, e2.region_administrative AS region2
 FROM collabo c 
@@ -491,7 +479,6 @@ WHERE etudiant1 IN (
   SELECT DISTINCT etudiant1
   FROM collabo
   WHERE sigle = 'BIO500'
-  
 )
 AND etudiant2 IN (
   SELECT DISTINCT etudiant2
@@ -506,17 +493,16 @@ AND etudiant2 IN (
 collab_pair_region <-dbGetQuery(con, sql_requete4)
 head(collab_pair_region)
 
-#Graphique de centralité
-
+#Graphique du réseau
 install.packages('igraph')
 library(igraph)
 
-# get names for row and columns
+# nom colonne pour la matrice
 nameVals <- sort(unique(unlist(liens_paires_bio500[1:2])))
-# construct 0 matrix of correct dimensions with row and column names
+# construction matrice vides avec nom colonne
 myMat <- matrix(0, length(nameVals), length(nameVals), dimnames = list(nameVals, nameVals))
 
-# fill in the matrix with matrix indexing on row and column names
+# remplir la matrice
 myMat[as.matrix(liens_paires_bio500[c("etudiant1", "etudiant2")])] <- liens_paires_bio500[["liens_paire"]]
 
 #faire le graphique
@@ -541,15 +527,8 @@ col.vec <- seq(5,10,length.out = 38)
 #couleure selon la taille
 V(graph)$size = col.vec[rk]
 V(graph)$edge=col.vec[rk]
-#####
-# Ajustement de la largeur des liens en fonction du nombre de liens entre les étudiants
-#edge.width <-rescale(liens_paires_bio500$liens_paire, to= c(1,5))
 
-
-
-#####
 #faire la figure de liens
-
 #c'est quoi les communautés dans le graph
 wtc = walktrap.community(graph)
 
@@ -565,33 +544,7 @@ legend(x=1.1, y=0.05, c(" faible nombre de collaborations"," nombre moyens de co
        col="#777777",pt.cex= c(1,2,3))
 
 
-#on calcule la modularité à partir de ces communautés
-modularity(wtc)
-#calcul de distance entre les noeuds
-distances(graph)
-#centralité des noeuds = son importance proportionelle d'un noeud dans le graph
-lol<-eigen_centrality(graph)$vector
-
-rkc <- rank(lol)
-
-# Faire un code de couleur
-col.vec <-heat.colors(38)
-
-#attribuer les couleurs aux noeuds
-V(graph)$color = col.vec[rkc]
-
-#attribuer des tailles
-col.vec <- seq(length.out = 38)
-
-#couleure selon la taille
-V(graph)$size = col.vec[rkc]
-
-#faire la figure de liens
-plot(graph, edge.arrow.mode = 0,
-     vertex.frame.color = NA,
-     layout = layout.fruchterman.reingold(graph))
-
- #Créer la liste des regions administratives et inclure l'ensemble des valeurs de distance regionnale dans une matrice (voir methodologie pour l'origine des valeurs)
+#Créer la liste des regions administratives et inclure l'ensemble des valeurs de distance regionnale dans une matrice (voir methodologie pour l'origine des valeurs)
 liste<-unique(etudiant$region_administrative)
 connect<-c(1,2,2,4,3,3,4,3,3,4,3,3,4,2,4,0,3,2,1,2,3,2,2,4,2,3,4,3,3,3,2,4,0,3,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,3,3,1,2,3,3,2,3,3,4,3,3,3,4,0,3,3,2,2,2,1,2,2,2,3,4,3,2,2,2,3,0,3,3,2,2,3,2,1,3,3,4,5,2,2,3,2,2,0,4,4,4,3,3,2,3,1,3,4,5,3,2,2,3,3,0,4,3,2,3,2,2,3,3,1,2,3,4,3,3,3,4,0,2,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1,4,4,5,3,4,5,5,3,2,1,6,5,5,5,6,0,2,3,3,2,4,3,2,3,4,5,6,1,2,4,2,2,0,5,3,3,2,3,2,2,2,3,4,5,2,1,3,2,2,0,4,4,3,3,3,2,3,2,3,4,5,4,3,1,3,4,0,4,2,2,1,3,2,2,3,3,4,5,2,2,3,1,3,0,4,4,4,3,4,3,2,3,4,5,6,2,2,4,3,1,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,4,3,3,4,4,2,1,2,5,4,4,4,5,0,1)
 myMatregion <- matrix(connect, length(liste), length(liste), dimnames = list(liste, liste))
@@ -632,6 +585,7 @@ for (p in 1:5) {
   Donnee_vis[q,3]<-sd(distance$proportion)
   q<-q+1
 }
+#effectuer un barplot des collaboration en fonction de la distance regionnale
 install.packages("gplots")
 library(gplots)
 ecart_sup<-Donnee_vis[,2]+Donnee_vis[,3]
